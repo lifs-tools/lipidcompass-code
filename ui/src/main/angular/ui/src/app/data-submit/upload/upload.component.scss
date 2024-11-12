@@ -1,0 +1,31 @@
+:host ::ng-deep {
+  .file-name {
+    font-size: 1.0rem;
+    font-weight: 300;
+  }
+  .file-list-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    width: 100%;
+
+    img {
+      width: 150px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+      margin-right: 2rem;
+    }
+
+    .file-list-detail {
+      flex: 1 1 0;
+    }
+
+    .file-list-action {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .p-button {
+      margin-bottom: 0.5rem;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+.user-card-bg {
+  background-image: url("/assets/img/LipidCompass-gray-15.svg");
+  background-position: top 50% left 100%;
+  background-repeat: no-repeat;
+  background-size: auto;
+  background-blend-mode: luminosity;
+  z-index: -1;
+}
+
+/* .user-card-tablet {
+  background-image: url("/assets/img/LipidCompass.svg");
+  background-position: top 10% left 0%;
+  background-repeat: no-repeat;
+  background-size: 25%;
+}
+
+.user-card-phone {
+  background-image: url("/assets/img/LipidCompass.svg");
+  background-position: top 10% left 0%;
+  background-repeat: no-repeat;
+  background-size: 50%;
+} */

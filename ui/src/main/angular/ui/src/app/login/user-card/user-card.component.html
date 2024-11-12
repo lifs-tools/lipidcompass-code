@@ -1,0 +1,88 @@
+<ng-container *ngIf="isAuthenticated">
+  <p-card header="Welcome {{ userService.userName() || 'Anonymous' }}" subheader="User details">
+    <div class="flex flex-column user-card-bg">
+      <div class="field grid">
+        <label class="col-12 sm:col-12 md:col-6 lg:col-1 mb-2 md-2 control-label" for="userName">{{ "userName" |
+          uppercase |
+          translate }}:</label>
+        <div class="col-12 sm:col-12 md:col-6 lg:col-11">
+          <div id="userName">{{ userService.userName() || "Anonymous" }}</div>
+        </div>
+      </div>
+      <div class="field grid">
+        <label class="col-12 sm:col-12 md:col-6 lg:col-1 mb-2 md-2 control-label" for="userId">{{ "userId" | uppercase |
+          translate
+          }}:</label>
+        <div class="col-12 sm:col-12 md:col-6 lg:col-11">
+          <div id="userId">{{ userService.userId() || "Anonymous" }}</div>
+        </div>
+      </div>
+      <div class="field grid">
+        <label class="col-12 sm:col-12 md:col-6 lg:col-1 mb-2 md-2 control-label" for="userEmail">{{ "userEmail" |
+          uppercase |
+          translate }}:</label>
+        <div class="col-12 sm:col-12 md:col-6 lg:col-11">
+          <div id="userEmail">{{ userService.userEmail() || "Anonymous" }}</div>
+        </div>
+      </div>
+      <div class="field grid">
+        <label class="col-12 sm:col-12 md:col-6 lg:col-1 mb-2 md-2 control-label" for="userRoles">{{ "userRoles" |
+          uppercase |
+          translate }}:</label>
+        <div class="col-12 sm:col-12 md:col-6 lg:col-11">
+          <div id="userRoles" *ngIf="!userService.userRoles()">
+            {{ "No roles" }}
+          </div>
+          <div id="userRolesList" *ngIf="userService.userRoles()">
+            <div *ngFor="let role of userService.userRoles()">
+              <p-chip label="{{ role | uppercase | translate }}" styleClass="p-mr-2"></p-chip>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field grid">
+        <div class="col-6">
+          <app-tracking-consent [showStatus]="true"></app-tracking-consent>
+        </div>
+      </div>
+    </div>
+    <ng-template pTemplate="footer">
+      <div [hidden]="!isAuthenticated">
+        <p-buttonGroup>
+          <p-button label="Manage" severity="success" icon="fas fa-user-cog"
+            (click)="this.manageAccount($event)"/>
+          <p-button label="Logout" severity="danger" icon="fa fa-sign-out-alt"
+            (click)="userService.logout()" />
+        </p-buttonGroup>
+      </div>
+    </ng-template>
+  </p-card>
+</ng-container>
+<ng-container *ngIf="!isAuthenticated">
+  <div class="flex flex-column">
+    <p-card *ngIf="!isAuthenticated" header="Login required" [styleClass]="cardCssClass" class="m-2">
+      <ng-template pTemplate="footer">
+        <div [hidden]="isAuthenticated">
+          <div class="p-fluid">
+            <div class="p-col-6">
+              <p>Please login to use {{ applicationName }} or request access below.</p>
+              <p>{{ applicationName }} is a database to help you navigate and explore the lipid structural space and
+                the range of lipid quantities.</p>
+            </div>
+            <div class="p-col-6">
+            </div>
+          </div>
+
+          <p-buttonGroup>
+            <p-button label="Login" icon="fa fa-sign-in-alt" severity="success"
+              (click)="userService.login()" />
+            <p-button 
+              icon="fa fa-unlock" label="Request Access" (click)="requestAccess($event)" />
+          </p-buttonGroup>
+          <!-- {{userService.userName() || "Anonymous"}} -->
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+  <app-footer></app-footer>
+</ng-container>

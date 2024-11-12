@@ -1,0 +1,48 @@
+<div class="p-grid p-p-1 p-m-1">
+  <div class="p-col-12">
+    <p-chips [(ngModel)]="facets">
+      <ng-template let-item pTemplate="item">
+        <span>{{ item.name }}</span
+        ><span>{{ item.facetCounts }}</span>
+      </ng-template>
+    </p-chips>
+  </div>
+
+  <div class="p-col-3">
+    <div *ngFor="let facet of facets">
+      <h4>{{facet.name}}</h4>
+      <ul *ngFor="let facetValue of facet.facetValues">
+        <li>{{facetValue.value}} ({{facetValue.count}})</li>
+      </ul>
+    </div>
+    <!-- <p-multiSelect
+      [options]="facets"
+      [(ngModel)]="selectedFacets"
+      optionLabel="name"
+    >
+    </p-multiSelect>
+
+    <p-multiSelect
+      [options]="facets"
+      [(ngModel)]="selectedFacets"
+      defaultLabel="Select to filter"
+      optionLabel="name"
+      class="multiselect-custom"
+    > -->
+      <!-- <ng-template pTemplate="header"> Header Content </ng-template>
+      <ng-template let-facet pTemplate="item">
+        <div class="facet-item">
+          <div>{{ facet.name }} ({{ facet.facetCounts }})</div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="footer"> Footer Content </ng-template>
+    </p-multiSelect> -->
+  </div>
+  <div class="p-col-9">
+    <h4>Results</h4>
+  </div>
+</div>
+<!-- 
+<p>
+  facet-search works!
+</p> -->

@@ -1,0 +1,151 @@
+<div class="grid p-2">
+  <!-- <p-confirmDialog header="Delete Submission" icon="fas fa-exclamation-triangle"></p-confirmDialog> -->
+  <div class="col-12" *ngIf="this.userService.isAuthenticated$ | async">
+    <div class="grid" *ngIf="!submissionInProgress">
+      <p-dataView class="col-12" [value]="submissions" id="userSubmissions" [loading]="loading" [paginator]="true"
+        [rows]="10" *ngIf="!submissionInProgress">
+        <ng-template pTemplate="header">
+          <div class="flex flex-row justify-content-between flex-wrap align-content-center">
+            <p-header>Your Study Submissions</p-header>
+            <div class="flex flex-row justify-content-end flex-wrap align-content-center">
+              <span class="p-buttonset">
+                <p-button label="New Submission" icon="fa fa-chevron-right" iconPos="right"
+                  (click)="newSubmission()"></p-button>
+              </span>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template let-submission pTemplate="listItem">
+          <div *ngIf="submission">
+            <div class="col-11 p-2 m-2">
+              <div class="grid">
+                <div class="col-3">
+                  <span class="fas fa-barcode fa-fw" aria-hidden="true"></span>&nbsp;Id
+                </div>
+                <div class="col-9">
+                  <a [routerLink]="['/submission/' + submission.id]"><b>{{ submission.id }}</b></a>
+                </div>
+              </div>
+              <div class="grid">
+                <div class="col-3">
+                  <span class="fas fa-user fa-fw" aria-hidden="true"></span>&nbsp;Created By
+                </div>
+                <div class="col-9">
+                  {{ submission.submitter?.firstName }}&nbsp;{{
+                  submission.submitter?.familyName
+                  }}&nbsp;({{ submission.submitter?.emailAddress }})
+                </div>
+              </div>
+              <div class="grid">
+                <div class="col-3">
+                  <span class="far fa-clock fa-fw" aria-hidden="true"></span>&nbsp;Created On
+                </div>
+                <div class="col-9">
+                  {{ submission.dateCreated | date:'medium' }}
+                </div>
+              </div>
+              <div class="grid">
+                <div class="col-3">
+                  <span class="far fa-clock fa-fw" aria-hidden="true"></span>&nbsp;Updated On
+                </div>
+                <div class="col-9">
+                  {{ submission.dateLastModified | date:'medium' }}
+                </div>
+              </div>
+              <div class="grid">
+                <div class="col-3">
+                  <span class="fas fa-vials fa-fw" aria-hidden="true"></span>&nbsp;Study
+                </div>
+                <div class="col-3">
+                  {{ submission.study?.name }}
+                </div>
+                <div class="col-6">
+                  {{ submission.study?.description }}
+                </div>
+              </div>
+              <div class="grid">
+                <div class="col-3">
+                  <span class="fas fa-link fa-fw" aria-hidden="true"></span>&nbsp;Private Link (for reviewers)
+                </div>
+                <div class="col-9">
+                  <a [routerLink]="['/review/' + submission.privateLinkUuid]"><b>{{ submission.privateLinkUuid
+                      }}</b></a>
+                </div>
+              </div>
+              <div class="grid">
+                <div class="col-3">
+                  <span class="far fa-file fa-fw" aria-hidden="true"></span>&nbsp;Submitted Files
+                </div>
+                <div class="col-9">
+                  <div *ngIf="submission.submittedFiles" id="submittedFiles">
+                    <p-virtualScroller [value]="submission.submittedFiles" scrollHeight="150px" [itemSize]="25"
+                      [rows]="10">
+                      <ng-template pTemplate="item" let-submittedFile>
+                        <span *ngIf="submittedFile.fileName"><a target="_blank" rel="noopener"
+                            (click)="downloadFile(submittedFile.fileName)">{{ submittedFile.fileName }} (SHA-256:
+                            {{ submittedFile.sha256Hash }})</a></span>
+                      </ng-template>
+                    </p-virtualScroller>
+                  </div>
+                </div>
+              </div>
+              <div class="grid">
+                <div class="col-3">
+                  <span class="far fa-file-alt fa-fw" aria-hidden="true"></span>&nbsp;MzTab-M Results
+                </div>
+                <div class="col-9">
+                  <div *ngIf="submission.mzTabResults" id="mzTabResults">
+                    <p-virtualScroller [value]="submission.mzTabResults" scrollHeight="50px" [itemSize]="25"
+                      [rows]="5">
+                      <ng-template pTemplate="item" let-mzTabResult>
+                        <span *ngIf="mzTabResult.mzTabSummary === null"><a
+                            [routerLink]="['/dataset/' + mzTabResult.id]">{{ mzTabResult.mzTabSummary?.title }} ({{
+                            mzTabResult.mzTabSummary?.id
+                            }}) ></a></span>
+                      </ng-template>
+                    </p-virtualScroller>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-1 p-2 m-2">
+              <div class="flex flex-column p-2" *ngIf="submission">
+                <div class="p-mb-2">
+                  <span title="Visibility" *ngIf="submission.visibility === 'PRIVATE'"
+                    class="fa fa-lock p-tag p-tag-danger m-b-1" aria-hidden="true"></span>
+                  <span title="Visibility" *ngIf="submission.visibility === 'RESTRICTED'"
+                    class="fa fa-lock p-tag p-tag-warning m-b-1" aria-hidden="true"></span>
+                  <span title="Visibility" *ngIf="submission.visibility === 'PUBLIC'"
+                    class="fa fa-lock-open p-tag p-tag-success m-b-1" aria-hidden="true"></span>
+                </div>
+                <div class="p-mb-2">
+                  <span title="Submission Status" class="p-tag p-tag-info">{{
+                    submission.status
+                    }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 p-2 m-2" *ngIf="submission.status === 'IN_PROGRESS'">
+              <div class="flex flex-row">
+                <button *ngIf="submission.status === 'IN_PROGRESS'" pButton type="button" title="Delete submission"
+                  (click)="deleteSubmission(submission.id)" icon="fa fa-times" iconPos="right"
+                  class="p-button-danger p-order-1 p-ac-start"></button>
+                <button *ngIf="submission.status === 'IN_PROGRESS'" pButton type="button" title="Continue submission"
+                  (click)="editSubmission(submission.id)" icon="fa fa-chevron-right" iconPos="right"
+                  class="p-order-2 p-ac-end"></button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </div>
+    <div class="grid" *ngIf="submissionInProgress">
+      <div class="col-12">
+        <p-steps [model]="dataSubmitSteps" [readonly]="true"></p-steps>
+      </div>
+      <div style="width:100%">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>

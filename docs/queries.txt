@@ -1,0 +1,15 @@
+// findAssayQuantitiesForPlotting
+FOR q in lipidQuantity
+    FILTER q.visibility == "PRIVATE"
+    LET lipid = DOCUMENT("lipids", q.lipid)
+    COLLECT normalizedShorthandName = lipid.normalizedShorthandName 
+    AGGREGATE 
+        minAssayQuantity = MIN(q.assayQuantity), 
+        maxAssayQuantity = MAX(q.assayQuantity), 
+        averageAssayQuantity = AVERAGE(q.assayQuantity),
+        stddevAssayQuantity = STDDEV_SAMPLE(q.assayQuantity),
+        countAssayQuantity = COUNT(q.assayQuantity)
+    INTO quantitiesByLipidName
+    LIMIT 50
+    RETURN { normalizedShorthandName, assayQuantityIds: quantitiesByLipidName[*].q._id , assayQuantities: quantitiesByLipidName[*].q.assayQuantity , minAssayQuantity, averageAssayQuantity, maxAssayQuantity, stddevAssayQuantity, countAssayQuantity}
+

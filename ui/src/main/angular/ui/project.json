@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/nx/schemas/project-schema.json",
+  "name": "lipidcompass-client-e2e",
+  "sourceRoot": "e2e",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@angular-devkit/build-angular:protractor",
+      "options": {
+        "protractorConfig": "./protractor.conf.js",
+        "devServerTarget": "lipidcompass-client:serve"
+      }
+    }
+  }
+}

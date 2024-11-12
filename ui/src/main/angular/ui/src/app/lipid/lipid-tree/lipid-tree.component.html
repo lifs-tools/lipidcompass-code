@@ -1,0 +1,24 @@
+<div class="p-grid">
+  <!-- navigation / selection -->
+  <div class="p-col-4 p-md-4 p-p-2" [class]="loading?'loader':''">
+    <!-- tree -->
+    <p-tree [value]="lipids"></p-tree>
+  </div>
+  <div class="p-col-8 p-md-8 p-p-2" [class]="loading?'loader':''">
+    <!-- paged results -->
+  </div>
+</div>
+<!--
+<div class="ui-g-12">
+  <div class="container ui-g-4">
+    <div class="lipid-tree container p-col-12" [class]="loading?'loader':''">
+      <h2>Lipid Categories</h2> -->
+<!--[(selection)]="selectedLipid"-->
+<!-- <p-tree [value]="lipids" selectionMode="single" (onNodeSelect)="nodeSelect($event)" (onNodeExpand)="loadChildren($event)"
+        [class.disabled]="disabled"></p-tree>
+    </div>
+  </div>
+  <div class="container ui-g-8">
+    <app-lipid-summary></app-lipid-summary>
+  </div>
+</div> -->

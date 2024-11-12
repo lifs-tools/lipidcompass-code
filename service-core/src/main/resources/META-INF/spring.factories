@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+	org.lipidcompass.service.core.servlet.LifsOauthAutoConfiguration, org.lipidcompass.service.core.reactive.ReactiveLifsOauthAutoConfiguration
+org.springframework.boot.env.EnvironmentPostProcessor=org.lipidcompass.service.core.docker.DockerSwarmSecretPostProcessor

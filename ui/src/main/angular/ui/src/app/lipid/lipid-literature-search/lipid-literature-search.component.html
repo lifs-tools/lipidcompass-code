@@ -1,0 +1,68 @@
+<div class="p-grid">
+  <div class="container p-col-12">
+    <div class="lipid-literature-search">
+      <div class="p-grid">
+        <div class="p-col-12 p-p-2 p-m-2">
+          <form class="p-col-12" #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+            <div class="p-grid">
+              <input type="text" name="queryInput" pInputText [(ngModel)]="query" />
+              <button pButton type="button" icon="fa-search" (click)="onSubmit(f)"></button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="p-grid">
+        <div class="p-col-12 p-p-2 p-m-2">
+          <h3>{{ndocs}} Results for query: '{{lastQuery}}'</h3>
+        </div>
+      </div>
+      <div class="p-grid">
+        <div class="p-col-12 p-p-2 p-m-2">
+          <form class="lc-ro-form" *ngIf="solrResponse">
+            <!-- <div class="p-col-12">{{ solrResponse['response']['docs'] | json}}</div> -->
+            <div class="p-col-12" *ngFor="let document of solrResponse['response']['docs']" style="border-bottom: 1px solid #000000; padding-bottom: 1rem; padding-top: 1rem;">
+              <div *ngFor="let key of docKeys" class="form-group form-group-sm row">
+                <label for="{{key}}" class="col-sm-3 control-label">{{key | uppercase | translate}}</label>
+                <div class="col-sm-9" [ngSwitch]="key">
+                  <!-- title,author,doi,keywords,subject,date,created,creation_date -->
+                  <!-- show the selected molecule (in SVG format) -->
+                  <ng-container *ngSwitchCase="'title'">
+                    <h3>{{document[key]}}</h3>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'author'">
+                    <ul class="list-inline">
+                      <li class="list-inline-item" *ngFor="let author of document[key]">
+                        {{author}}
+                      </li>
+                    </ul>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'doi'">
+                    <ul *ngFor="let doi of document[key]">
+                      <li>
+                        <a href="https://doi.org/{{doi}}">{{doi}}</a>
+                      </li>
+                    </ul>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'keywords'">
+                    <ul class="list-inline">
+                      <li class="list-inline-item" *ngFor="let keywords of document[key]">
+                        {{keywords}}
+                      </li>
+                    </ul>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'subject'">
+                    <p>{{document[key]}}</p>
+                  </ng-container>
+                  <!--<ng-container *ngSwitchCase="'level'"><input type="text" class="form-control" id="{{key}}" required value="{{selectedItemSummary['data'][key] | translate}}" [readonly]="true"></ng-container>-->
+                  <ng-container *ngSwitchDefault>
+                    <input type="text" class="form-control" id="{{key}}" required value="{{document[key]}}" [readonly]="true">
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

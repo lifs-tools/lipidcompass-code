@@ -1,0 +1,27 @@
+#compass {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    background-image: url('/assets/img/lipidcompass-base.png');
+    clear: none;
+  }
+
+#compass div {
+    position: absolute;
+}
+
+#compass img[src*='rose'] {
+    -webkit-transition: -webkit-transform 6s linear;
+    -moz-transition: -moz-transform 6s linear;
+    -o-transition: -o-transform 6s linear;
+    -ms-transition: -ms-transform 6s linear;
+    transition: transform 6s linear;
+}
+
+#compass:target img[src*='rose'] {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    transform: rotate(360deg);
+}

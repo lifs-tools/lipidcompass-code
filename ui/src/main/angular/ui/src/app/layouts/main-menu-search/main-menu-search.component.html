@@ -1,0 +1,33 @@
+<form
+  *ngIf="userService.isAuthenticated$ | async"
+  #f="ngForm"
+  (ngSubmit)="onSubmit($event)"
+  (keyup.enter)="onSubmit($event)"
+  novalidate
+>
+  <div class="p-inputgroup">
+    <button type="button" pButton pRipple icon="pi pi-search"></button>
+      <p-autoComplete
+        inputId="main-menu-search-ac"
+        [(ngModel)]="query"
+        [suggestions]="autoCompleteResults"
+        (completeMethod)="autocompleteSearch($event)"
+        [dropdown]="false"
+        name="mainMenuSearchAutocomplete"
+        class="p-autocomplete p-component"
+        placeholder="Type to search"
+        [autoHighlight]="false"
+        [autofocus]="false"
+        field="name"
+        (onKeyUp)="onKeyUp($event)"
+        (onDropdownClick)="onSubmit($event)"
+        (onSelect)="handleSelect($event)"
+        (onUnselect)="handleUnSelect($event)"
+        ><ng-template let-result pTemplate="item">
+          <div class="flex align-items-center gap-2">
+            <a [routerLink]="['/lipid', result.itemId]">{{ result.name }}</a>
+          </div>
+        </ng-template>
+      </p-autoComplete>
+  </div>
+</form>

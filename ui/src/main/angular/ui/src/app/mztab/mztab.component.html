@@ -1,0 +1,6 @@
+<p-card header="Define Metadata">
+  <form [formGroup]="form" (ngSubmit)="onSubmit(model)">
+    <formly-form [form]="form" [fields]="fields" [model]="model"></formly-form>
+    <p-button label="Submit" type="submit"></p-button>
+  </form>
+</p-card>

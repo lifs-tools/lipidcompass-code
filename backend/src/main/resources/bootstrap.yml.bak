@@ -1,0 +1,24 @@
+eureka:
+      client:
+         serviceUrl:
+             defaultZone: ${EUREKA_URI:http://127.0.0.1:28092/eureka}
+
+spring:
+    application:
+        name: lipidcompass-backend
+    cloud:
+        config:
+            uri: ${CONFIG_URI:http://127.0.0.1:28095/lcconfig}
+            fail-fast: true
+            username: ${LC_CONFIG_USER:lcClient}
+            password: ${LC_CONFIG_PW}
+        retry:
+            maxAttempts: 50
+---
+spring:
+    config:
+        activate:
+            on-profile: dev
+    cloud:
+        config:
+            enabled: false

@@ -1,0 +1,98 @@
+<p-card>
+    <ng-template pTemplate="title"> Define Study Information </ng-template>
+    <ng-template pTemplate="subtitle">
+      Enter details about your study
+    </ng-template>
+    <ng-template pTemplate="content">
+      <div class="p-fluid">
+        <div class="p-field">
+          <label for="name">Name</label>
+          <input
+            #name="ngModel"
+            id="name"
+            type="text"
+            minlength="10"
+            required
+            pInputText
+            [(ngModel)]="studyName"
+            [ngClass]="{
+              'ng-dirty':
+                (name.invalid && submitted) || (name.dirty && name.invalid)
+            }"
+          />
+          <small
+            *ngIf="(name.invalid && submitted) || (name.dirty && name.invalid)"
+            class="p-error"
+            >Please enter a name (at least
+            {{ nameMinLength }} characters).</small
+          >
+        </div>
+        <div class="p-field">
+          <label for="description">Description</label>
+          <textarea
+            #description="ngModel"
+            id="description"
+            type="text"
+            minlength="20"
+            required
+            pInputTextarea
+            [(ngModel)]="studyDescription"
+            [ngClass]="{
+              'ng-dirty':
+                (description.invalid && submitted) ||
+                (description.dirty && description.invalid)
+            }"
+            [autoResize]="true"
+            [rows]="5"
+          ></textarea>
+          <small
+            class="p-error"
+            *ngIf="
+              (description.invalid && submitted) ||
+              (description.dirty && description.invalid)
+            "
+            >Please enter a description (at least
+            {{ descriptionMinLength }} characters).</small
+          >
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <div
+        class="flex justify-content-between flex-wrap flex-row"
+        *ngIf="submission && submission.status === 'IN_PROGRESS'"
+      >
+        <div class="p-nogutter flex">
+          <button
+            pButton
+            type="button"
+            label="Back"
+            (click)="previousPage($event)"
+            icon="fa fa-chevron-left"
+            iconPos="left"
+          ></button>
+        </div>
+        <div class="p-nogutter flex">
+          <span class="p-buttonset">
+            <button
+              pButton
+              type="button"
+              label="Cancel"
+              (click)="cancel($event)"
+              icon="fa fa-times"
+              iconPos="right"
+              class="p-button-danger"
+            ></button>
+            <button
+              pButton
+              type="button"
+              label="Next"
+              (click)="nextPage($event)"
+              icon="fa fa-chevron-right"
+              iconPos="right"
+            ></button>
+          </span>
+        </div>
+      </div>
+    </ng-template>
+  </p-card>

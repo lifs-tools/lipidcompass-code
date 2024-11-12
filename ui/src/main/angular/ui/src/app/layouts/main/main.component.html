@@ -1,0 +1,28 @@
+<main role="main" class="flex flex-column">
+    <p-toast position="top-right" [enableService]="true" key="messages"
+        [style]="{ 'white-space': 'pre-line' }"></p-toast>
+    <app-tracking-consent></app-tracking-consent>
+    <p-menubar orientation="top" [model]="items" [autoDisplay]="true"
+        >
+        <ng-template pTemplate="end">
+            <app-main-menu-search *ngIf="!wrapSearch && (this.userService.isAuthenticated$ | async)"></app-main-menu-search>
+        </ng-template>
+    </p-menubar>
+    <div class="flex flex-column">
+        <div *ngIf="wrapSearch && (this.userService.isAuthenticated$ | async)">
+            <app-main-menu-search></app-main-menu-search>
+        </div>
+    </div>
+    <div class="flex flex-column">
+        <div *ngIf="this.userService.isAuthenticated$ | async" style="width:100%">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+    <div class="flex flex-column">
+        <div *ngIf="(this.userService.isAuthenticated$ | async) === false">
+            <app-login></app-login>
+        </div>
+    </div>
+    <p-scrollTop></p-scrollTop>
+</main>
+<app-footer *ngIf="this.userService.isAuthenticated$ | async"></app-footer>

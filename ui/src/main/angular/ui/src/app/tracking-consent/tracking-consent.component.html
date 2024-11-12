@@ -1,0 +1,33 @@
+<div *ngIf="showStatus">
+  <p-messages severity="info">
+    <ng-template pTemplate>
+      <div class="p-grid">
+        <div class="p-col-12">
+          This website uses first-party cookies for tracking with Matomo to
+          collect anonymized usage statistics. To find out more, please consult our
+          <a
+            href="{{ privacyUrl }}"
+            target="_blank"
+            >privacy page</a
+          >.
+          <!-- By checking the checkbox, you are
+          agreeing to the use of our site cookies and anonymized tracking with
+          Matomo. By unchecking the checkbox, you are disabling tracking
+          cookies. -->
+        </div>
+        <!-- <div class="p-col-12 p-pt-2">
+          <label>
+            <p-checkbox [binary]="true" [(ngModel)]="optedIn"
+            (ngModelChange)="handleChange($event)"></p-checkbox>
+            <div *ngIf="(optedOut$ | async)===true; else optedInSection">
+              You are currently opted out. Click here to opt in.
+            </div>
+            <ng-template #optedInSection
+              >You are currently opted in. Click here to opt out.</ng-template
+            >
+          </label>
+        </div> -->
+      </div>
+    </ng-template>
+  </p-messages>
+</div>

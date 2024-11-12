@@ -1,0 +1,184 @@
+<div class="flex flex-column p-2">
+  <!-- <p-tabView>
+    <p-tabPanel header="By Lipid Name"> -->
+  <div class="lipid-search grid">
+    <!-- <div class="p-col-12 p-pb-0 p-mb-0 p-pt-0 p-mt-0"> -->
+    <!-- <p-panel
+            header="Names"
+            [toggleable]="false"
+            [collapsed]="false"
+            [showHeader]="true"
+            styleClass="fillPanel"
+          >
+            <div class="p-fluid">
+              <div class="p-field p-grid p-pt-1 p-pl-1 p-pr-1 p-pb-1 p-mb-1">
+                <label
+                  for="selectedNamesChips"
+                  class="p-col-12 p-mb-1 p-md-1 p-mb-md-0"
+                  >Selection</label
+                >
+                <p-chips
+                  class="p-col-12 p-md-11"
+                  id="selectedNamesChips"
+                  [ngModel]="queryString"
+                  (onRemove)="handleNameRemoved($event)"
+                  (onAdd)="onAdd($event)"
+                  field="normalizedShorthandName"
+                >
+                  <ng-template let-name pTemplate="item">
+                    <span class="m-p-1">{{ name }}</span>
+                  </ng-template>
+                </p-chips>
+              </div>
+            </div>
+          </p-panel> -->
+    <!-- </div> -->
+    <div class="sm:col-3 md:col-3 lg:col-3 xl:col-3">
+      <p-panel header="Query" [toggleable]="false" [collapsed]="false" [showHeader]="true" ngClass="facetPanel"
+        *ngIf="query">
+        <div class="field grid">
+          <label for="levelInput" class="col-12 md:col-3 lg:col-3 xl:col-3">Level</label>
+          <p-dropdown class="col-12 md:col-9 lg:col-9 xl:col-9" [options]="level" [(ngModel)]="selectedLevel"
+            name="levelInput" [placeholder]="placeholder" id="levelInput" [style]="{ width: '100%' }"
+            [autoWidth]="false" (onChange)="levelInputOnChange($event)">
+          </p-dropdown>
+        </div>
+        <div class="field grid">
+          <label for="matchingModeInput" class="col-12 md:col-3 lg:col-3 xl:col-3">Match</label>
+          <p-dropdown class="col-12 md:col-9 lg:col-9 xl:col-9" [options]="matchingModes" [(ngModel)]="matchMode"
+            name="matchingModeInput" [placeholder]="placeholder" id="matchingModeInput" [style]="{ width: '100%' }"
+            [autoWidth]="false" (onChange)="matchingModesOnChange($event)">
+          </p-dropdown>
+        </div>
+        <div class="field grid">
+          <label for="lipidNameAutocomplete" class="col-12 md:col-3 lg:col-3 xl:col-3">
+            Lipid Name
+          </label>
+          <!-- fix component width to be 100 % of parent container minus margins, needs to be display: inline instead of display: inline-flex -->
+          <p-autoComplete id="lipidNameAutocomplete" class="col-12 md:col-9 lg:col-9 xl:col-9" 
+            [style]="{ display: 'inline' }" [(ngModel)]="queryString" [suggestions]="lipidNameAutocompleteResults"
+            (completeMethod)="lipidNameAutocomplete($event)" [multiple]="true">
+          </p-autoComplete>
+          <p-checkbox name="normalizeName" id="normalizeName" class="col-12 md:col-12 lg:col-12 xl:col-12 p-2"
+            label="Normalize" [(ngModel)]="query.normalizeName" [binary]="true">
+          </p-checkbox>
+        </div>
+        <div class="field grid">
+          <!-- add form input fields for lipidQuery minMass and maxMass -->
+          <label for="minMass" class="col-12 md:col-3 lg:col-3 xl:col-3">Min Mass</label>
+          <p-inputNumber [(ngModel)]="massFilter.minMass" inputId="minMass" mode="decimal" [minFractionDigits]="2"
+            [maxFractionDigits]="4" class="col-12 md:col-9 lg:col-9 xl:col-9" mode="decimal" [showButtons]="true"
+            [min]="0" [max]="2000" [style]="{'width':'100%'}"> </p-inputNumber>
+          <label for="maxMass" class="col-12 md:col-3 lg:col-3 xl:col-3">Max Mass</label>
+          <p-inputNumber [(ngModel)]="massFilter.maxMass" inputId="maxMass" mode="decimal" [minFractionDigits]="2"
+            [maxFractionDigits]="4" class="col-12 md:col-9 lg:col-9 xl:col-9" mode="decimal" [showButtons]="true"
+            [min]="0" [max]="2000" [style]="{'width':'100%'}"> </p-inputNumber>
+          <p-checkbox name="filterByMass" id="filterByMass" class="col-12 md:col-1 lg:col-1 xl:col-1 p-2"
+            label="Filter by Mass" [(ngModel)]="filterByMass" [binary]="true">
+          </p-checkbox>  
+        </div>
+        <div class="field grid">
+          <label for="lipidSumFormulaAutocomplete" class="col-12 md:col-3 lg:col-3 xl:col-3">
+            Sum Formula
+          </label>
+          <div class="mx-2 w-100">
+            <input pInputText type="text" id="lipidSumFormulaAutocomplete" class="col-12 md:col-9 lg:col-9 xl:col-9 p-2" [(ngModel)]="query.sumFormula"/>
+          </div>
+        </div>
+        <div class="flex flex-row flex-wrap justify-content-between gap-1">
+          <p-button label="Update" icon="pi pi-search" styleClass="p-button-primary flex"
+            (click)="runQuery()"></p-button>
+          <p-button label="Reset" icon="fas fa-undo" styleClass="p-button-danger flex"
+            (click)="resetState()"></p-button>
+        </div>
+      </p-panel>
+    </div>
+    <div class="sm:col-9 md:col-9 lg:col-9 xl:col-9">
+      <p-table [value]="results" [rows]="20" [paginator]="true" [pageLinks]="3"
+        [rowsPerPageOptions]="rowsPerPageOptions" [totalRecords]="pageMetadata.totalElements"
+        [class.disabled]="disabled" [loading]="loading" [lazy]="true" (onPage)="onPageChange($event)"
+        sortMode="multiple" (onSort)="sortPage($event)" ><!-- styleClass="p-datatable-sm" for small compact table -->
+        <ng-template pTemplate="caption">
+          <div class="p-d-flex p-ai-center p-jc-between">
+            Lipids
+            <!-- <p-button icon="pi pi-refresh"></p-button> -->
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Result</th>
+            <th pSortableColumn="normalizedShorthandName">
+              Name <p-sortIcon field="normalizedShorthandName"></p-sortIcon>
+            </th>
+            <th pSortableColumn="lipidCategory">
+              Category <p-sortIcon field="lipidCategory"></p-sortIcon>
+            </th>
+            <th pSortableColumn="lipidClass">
+              Class <p-sortIcon field="lipidClass"></p-sortIcon>
+            </th>
+            <th pSortableColumn="lipidLevel">
+              Level <p-sortIcon field="lipidLevel"></p-sortIcon>
+            </th>
+            <th pSortableColumn="exactMass">
+              Monoisotopic Mass <p-sortIcon field="exactMass"></p-sortIcon>
+            </th>
+            <th pSortableColumn="chemicalFormula">
+              Sum Formula <p-sortIcon field="chemicalFormula"></p-sortIcon>
+            </th>
+            <!-- <th>Identified</th> -->
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-lipid let-rowIndex="rowIndex">
+          <tr>
+            <td>{{ rowIndex + 1 }}</td>
+            <td>
+              <a [routerLink]="['/lipid/' + lipid.id]">{{
+                lipid.normalizedShorthandName
+                }}</a>
+            </td>
+            <td>
+              {{ "LIPID_CATEGORY." + lipid.lipidCategory | translate }} ({{
+              lipid.lipidCategory
+              }})
+              <!-- <p-breadcrumb
+                    [model]="[
+                      { label: lipid.lipidCategory },
+                      { label: lipid.lipidClass }
+                    ]"
+                  ></p-breadcrumb> -->
+            </td>
+            <td>
+              {{ lipid.lipidClass | translate }}
+              <!-- <p-breadcrumb
+                    [model]="[
+                      { label: lipid.lipidCategory },
+                      { label: lipid.lipidClass }
+                    ]"
+                  ></p-breadcrumb> -->
+            </td>
+            <td>
+              <span>{{ lipid.lipidLevel | uppercase | translate }}</span>
+            </td>
+            <td>
+              <span>{{ lipid.exactMass | number:'1.4-4' }}</span>
+            </td>
+            <td>
+              <span class="sum-formula">{{ lipid.chemicalFormula }}</span>
+            </td>
+            <!-- <td>{{ lipid.mzTabResultId }}</td> -->
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="p-d-flex p-ai-center p-jc-between">
+            Found {{ pageMetadata ? pageMetadata?.totalElements : 0 }} entries.
+          </div>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+          <tr>
+            <td [attr.colspan]="6">No records found</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

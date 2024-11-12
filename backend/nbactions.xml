@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-run-dev</actionName>
+            <displayName>run-dev</displayName>
+            <goals>
+                <goal>spring-boot:run</goal>
+            </goals>
+            <properties>
+                <Env.EUREKA_URI>http://127.0.0.1:28092/eureka</Env.EUREKA_URI>
+            </properties>
+            <activatedProfiles>
+                <activatedProfile>lh-dev</activatedProfile>
+            </activatedProfiles>
+        </action>
+        <action>
+            <actionName>CUSTOM-dev-debug</actionName>
+            <displayName>dev-debug</displayName>
+            <goals>
+                <goal>spring-boot:run</goal>
+            </goals>
+            <properties>
+                <Env.EUREKA_URI>http://localhost:28092/eureka</Env.EUREKA_URI>
+                <jpda.listen>maven</jpda.listen>
+                <run.jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000</run.jvmArguments>
+            </properties>
+            <activatedProfiles>
+                <activatedProfile>lh-dev</activatedProfile>
+            </activatedProfiles>
+        </action>
+        <action>
+            <actionName>CUSTOM-Test with output</actionName>
+            <displayName>Test with output</displayName>
+            <goals>
+                <goal>test</goal>
+            </goals>
+            <properties>
+                <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-Generate OpenApi Frontend Services</actionName>
+            <displayName>Generate OpenApi Frontend Services</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>generate-openapi-frontend-services</activatedProfile>
+            </activatedProfiles>
+        </action>
+    </actions>

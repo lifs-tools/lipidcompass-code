@@ -1,0 +1,15 @@
+<div class="flex flex-column">
+  <section class="m-4">
+    <h1>LipidCompass Help</h1>
+    <p>LipidCompass is a database to help you navigate and explore the lipid quantitative and structural space.</p>
+    <app-card-grid [cards]="helpCards" class="m-2"></app-card-grid>
+  </section>
+  <section class="m-4">
+    <h2>FAQ</h2>
+    <!-- loop over the faqEntries, embed them in details and summary tags -->
+    <details *ngFor="let faqEntry of faqEntries">
+      <summary class="pb-2">{{ faqEntry.question }}</summary>
+      <p class="m-2 p-2 surface-50" [innerHTML]="faqEntry.answer"></p>
+    </details>
+  </section>
+</div>

@@ -1,0 +1,119 @@
+<div class="grid">
+  <div class="col-12">
+    <h1>{{ title }}</h1>
+    <p-table #dt1 dataKey="id" [value]="pagedItems" [lazy]="true" [columns]="selectedColumns"
+      (onLazyLoad)="loadItems($event)" [showCurrentPageReport]="true" [rowsPerPageOptions]="[25, 50, 100]"
+      [loading]="loading" styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [paginator]="true"
+      [rows]="pageable.size" [totalRecords]="totalElements" [globalFilterFields]="filterFields"
+      [resizableColumns]="true" columnResizeMode="expand" sortMode="multiple">
+      <ng-template pTemplate="caption">
+        <div class="flex">
+          <button type="button" pButton pRipple icon="fas fa-file-csv" (click)="dt1.exportCSV()" pTooltip="CSV"
+            tooltipPosition="bottom"></button>
+          <button type="button" pButton pRipple icon="fas fa-file-excel" (click)="exportExcel()"
+            class="p-button-success" pTooltip="XLS" tooltipPosition="bottom"></button>
+          <p-inputGroup ngClass="pl-2 flex w-6">
+            <p-inputGroupAddon>
+              <i class="fas fa-search"></i>
+            </p-inputGroupAddon>
+            <input pInputText type="text" (input)="dt1.filterGlobal($event, 'contains')" placeholder="Search" />
+          </p-inputGroup>
+          <p-multiSelect [options]="columns" [(ngModel)]="selectedColumns" optionLabel="header"
+            selectedItemsLabel="{0} columns selected" ngClass="pl-2 flex flex-grow-1"
+            placeholder="Choose Columns"></p-multiSelect>
+
+        </div>
+      </ng-template>
+      <!-- <ng-template pTemplate=""> -->
+      <!-- <div class="p-d-flex">
+        <button
+          type="button"
+          pButton
+          pRipple
+          icon="fas fa-file-csv"
+          (click)="dt1.exportCSV()"
+          class="p-mr-2"
+          pTooltip="CSV"
+          tooltipPosition="bottom"
+        ></button>
+        <button
+          type="button"
+          pButton
+          pRipple
+          icon="fas fa-file-excel"
+          (click)="exportExcel()"
+          class="p-button-success p-mr-2"
+          pTooltip="XLS"
+          tooltipPosition="bottom"
+        ></button>
+        <!--      <button
+          type="button"
+          pButton
+          pRipple
+          icon="fas fa-file-csv"
+          (click)="dt1.exportCSV({ selectionOnly: true })"
+          class="p-button-info p-ml-auto"
+          pTooltip="Selection Only"
+          tooltipPosition="bottom"
+        ></button>-->
+
+      <!-- </div>
+    </ng-template> -->
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem">
+            <!--<p-tableHeaderCheckbox></p-tableHeaderCheckbox>-->
+            Row
+          </th>
+
+          <th *ngFor="let column of selectedColumns" pResizableColumn [pSortableColumn]="column.field">
+            <div class="p-d-flex p-jc-between p-ai-center">
+              {{ column.header }} <p-sortIcon [field]="column.field"></p-sortIcon>
+            </div>
+          </th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <!--<tr class="p-selectable-row">-->
+        <tr>
+          <td style="width: 3rem">
+            {{ rowIndex + 1 }}
+            <!--<p-tableCheckbox [value]="rowData"></p-tableCheckbox>-->
+          </td>
+          <!-- <td *ngFor="let col of columns">
+          {{ rowData[col.field] }}
+        </td> -->
+
+          <td *ngFor="let col of selectedColumns">
+            <div *ngIf="col.filterType === 'object'">
+              {{ col.content(rowData[col.field]) | json | ellipsis: 50 }}
+            </div>
+            <div *ngIf="col.filterType === 'numeric'">
+              {{ col.content(rowData[col.field]) }}
+            </div>
+            <div *ngIf="col.filterType === 'date'">
+              {{ col.content(rowData[col.field]) | date: "short" }}
+            </div>
+            <div *ngIf="col.filterType === 'text'">
+              {{ col.content(rowData[col.field]) | ellipsis: 50 }}
+            </div>
+          </td>
+          <td>
+            <button pButton icon="fas fa-edit" class="p-button p-button-primary mr-2" (click)="edit(rowData)"></button>
+            <button pButton icon="fas fa-times" class="p-button p-button-danger mr-2"
+              (click)="delete(rowData)"></button>
+            <button pButton icon="fas fa-check" class="p-button p-button-success" (click)="onClick(rowData)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="columns.length + 2">No Items found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

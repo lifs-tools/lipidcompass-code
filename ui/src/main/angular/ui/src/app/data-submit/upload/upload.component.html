@@ -1,0 +1,134 @@
+<!-- <div class="p-col-12">
+  <p-steps [model]="dataSubmitSteps" [activeIndex]="activeIndex"></p-steps>
+</div> -->
+<div>
+  <!-- <input type="file" #submitFileInput (change)="onFileInput(submitFileInput.files)" /> -->
+</div>
+<p-card>
+  <ng-template pTemplate="title"> Upload result files </ng-template>
+  <ng-template pTemplate="subtitle">
+    Select, upload and review data
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="p-fluid p-pb-4">
+      <input
+        type="file"
+        class="file-input"
+        (change)="onSelectFile($event)"
+        #fileUpload
+        hidden="true"
+      />
+
+      <div class="p-formgroup-inline">
+        <div class="p-inputgroup">
+          <input
+            id="selectedFile"
+            type="text"
+            pInputText
+            placeholder="No file uploaded yet."
+            value="{{ file?.name || 'No file uploaded yet.' }}"
+            [ngClass]="{'disabled':progress}"
+          />
+
+          <button
+            pButton
+            type="button"
+            label="Select"
+            (click)="fileUpload.click()"
+            icon="far fa-folder-open"
+            iconPos="left"
+            class="p-button-primary"
+            [disabled]="progress"
+          ></button>
+          <button
+            pButton
+            type="button"
+            label="Upload"
+            (click)="myCustomUpload($event)"
+            icon="fas fa-upload"
+            iconPos="left"
+            class="p-button-success"
+            [disabled]="!file"
+          ></button>
+          <button
+            pButton
+            type="button"
+            label="Clear"
+            (click)="clear()"
+            icon="fas fa-times"
+            iconPos="left"
+            class="p-button-danger"
+            [disabled]="!file"
+          ></button>
+        </div>
+      </div>
+    </div>
+    <div class="p-grid">
+      <p-dataView
+        class="p-col-12"
+        [value]="submission?.submittedFiles"
+        id="userSubmissions"
+        [paginator]="true"
+        [rows]="10"
+        [loading]="progress"
+      >
+        <ng-template pTemplate="header">Files in submission</ng-template>
+        <ng-template let-submittedFile pTemplate="listItem">
+          <div class="p-col-12">
+            <div class="file-list-item p-grid">
+                <!-- <img [src]="'assets/showcase/images/demo/product/' + product.image" [alt]="product.name"/> -->
+                <div class="file-name p-px-2 p-col-4">{{submittedFile.fileName}}</div>
+                <div class="file-list-detail p-px-2 p-col-7">
+                    <!-- <div class="file-path">{{submittedFile.filePath}}</div> -->
+                    <div class="file-hash">{{submittedFile.sha256Hash}}</div>
+                    <div class="file-type">{{submittedFile.fileType}}</div>
+                    <!-- <i class="pi pi-tag product-category-icon"></i><span class="product-category">{{product.category}}</span> -->
+                </div>
+                <div class="file-list-action p-pl-2 p-col-1">
+                    <button pButton type="button" class="p-button-danger" icon="fas fa-times" label="Delete" (click)="deleteFile(submittedFile)"></button>
+                </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div
+      class="p-d-flex p-jc-between"
+      *ngIf="submission && submission.status === 'IN_PROGRESS'"
+    >
+      <div class="p-nogutter p-justify-start">
+        <button
+          pButton
+          type="button"
+          label="Back"
+          (click)="previousPage($event)"
+          icon="fa fa-chevron-left"
+          iconPos="left"
+        ></button>
+      </div>
+      <div class="p-nogutter p-justify-end">
+        <span class="p-buttonset">
+          <button
+            pButton
+            type="button"
+            label="Cancel"
+            (click)="cancel($event)"
+            icon="fa fa-times"
+            iconPos="right"
+            class="p-button-danger"
+          ></button>
+          <button
+            pButton
+            type="button"
+            label="Next"
+            (click)="nextPage($event)"
+            icon="fa fa-chevron-right"
+            iconPos="right"
+          ></button>
+        </span>
+      </div>
+    </div>
+  </ng-template>
+</p-card>

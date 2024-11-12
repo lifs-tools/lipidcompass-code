@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-Run dev</actionName>
+            <displayName>Run dev</displayName>
+            <goals>
+                <goal>spring-boot:run</goal>
+	</goals>
+	<properties>
+                <Env.EUREKA_URI>http://localhost:28092/eureka</Env.EUREKA_URI>
+            </properties>
+            <activatedProfiles>
+                <activatedProfile>lh-dev</activatedProfile>
+            </activatedProfiles>
+        </action>
+    </actions>

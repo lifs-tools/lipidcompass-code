@@ -1,0 +1,126 @@
+<div class="flex flex-column p-2">
+  <div class="grid">
+    <div class="col-3">
+      <div class="grid">
+        <!-- <p-dataView
+        [value]="selectedOrganisms"
+        [paginator]="true"
+        [rows]="10"
+        id="tissues"
+      >
+        <p-header>Organism</p-header>
+        <ng-template let-organism pTemplate="listItem">
+          <div>
+            <p-checkbox
+              name="groupname"
+              inputId="{{ organism.name }}"
+              name="organismSelection"
+              value="{{ organism.name }}"
+              label="{{ organism.name }}"
+              [(ngModel)]="selectedOrganisms"
+              title="{{ organism.description }}"
+            ></p-checkbox>
+          </div>
+        </ng-template>
+        
+      </p-dataView>
+      <p-dataView
+        [value]="tissueData"
+        [paginator]="true"
+        [rows]="10"
+        id="tissues"
+      >
+        <p-header>Tissue</p-header>
+        <ng-template let-tissue pTemplate="listItem">
+          <div class="ui-g">
+            <p-checkbox
+              name="tissuename"
+              inputId="{{ tissue.name }}"
+              name="tissueSelection"
+              value="{{ tissue.name }}"
+              label="{{ tissue.name }}"
+              [(ngModel)]="selectedTissues"
+              title="{{ tissue.description }}"
+            ></p-checkbox>
+          </div>
+        </ng-template>
+      </p-dataView> -->
+      </div>
+    </div>
+    <div class="col-9">
+      <div class="grid">
+        <p-dataView [value]="studyData" id="studys">
+          <p-header>Studies</p-header>
+          <ng-template let-studies pTemplate="list">
+            <div class="col-12 p-1 m-1" *ngFor="let study of studies; let first = first">
+              <div class="grid" [ngClass]="{ 'border-top-1 surface-border': !first }">
+                <div class="col-2 p-p-2 m-p-2">
+                  <p-checkbox name="studyname" inputId="{{ study.name }}" name="studySelection">
+                    value="{{ study.name }}" label="{{ study.name }}"
+                    [(ngModel)]="selectedStudies" ></p-checkbox>
+                </div>
+                <div class="col-9 p-p-2 m-p-2">
+                  <div class="grid">
+                    <div class="col-3">
+                      <span class="fa fa-flask fa-fw" aria-hidden="true"></span>&nbsp;Title
+                    </div>
+                    <div class="col-9">
+                      <a [routerLink]="['/study/' + study.id]"><strong>{{ study.name }}</strong></a>
+                    </div>
+                  </div>
+                  <div class="grid">
+                    <div class="col-3">
+                      <span class="fas fa-tags fa-fw" aria-hidden="true"></span>&nbsp;Classifications
+                    </div>
+                    <div class="col-9 p-d-flex p-flex-wrap">
+                      <span class="p-tag m-p-1 classification" *ngFor="
+                        let cvParam of study.cvTermReferences
+                          | orderBy: ['cvParam.name']:['desc']
+                      ">
+                      <app-olslink [cvParam]="cvParam"></app-olslink>
+                      </span>
+                    </div>
+                  </div>
+                  <!-- <div class="grid">
+                  <div class="col-3">
+                    <span class="fas fa-weight fa-fw" aria-hidden="true"></span
+                    >&nbsp;Quantification Unit
+                  </div>
+                  <div class="col-9">
+                    {{ study?.mzTabSummary?.quantificationUnit?.name }} ({{
+                      study?.mzTabSummary?.quantificationUnit?.cv_accession
+                    }})
+                  </div>
+                </div> -->
+                  <div class="grid">
+                    <div class="col-3">
+                      <span class="fas fa-tags fa-fw" aria-hidden="true"></span>&nbsp;Datasets
+                    </div>
+                    <div class="col-9 p-d-flex p-flex-wrap">
+                      <span class="p-tag p-tag-dataset m-p-1 dataset"
+                        *ngFor="let mzTabResult of study.mzTabResultReferences | orderBy: ['mzTabResult.id'] :['asc']">
+                        <a [routerLink]="['/dataset', mzTabResult.id]" title="{{ mzTabResult?.mzTabSummary?.title }}">{{
+                          mzTabResult?.mzTabSummary?.title }} ({{ mzTabResult?.id }})</a>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-1 p-p-2 m-p-2">
+                  <span title="Visibility" *ngIf="study.visibility === 'PRIVATE'" class="fa fa-lock p-tag p-tag-danger"
+                    aria-hidden="true"></span>
+                  <span title="Visibility" *ngIf="study.visibility === 'RESTRICTED'" class="fa fa-lock p-tag p-tag-warning"
+                    aria-hidden="true"></span>
+                  <span title="Visibility" *ngIf="study.visibility === 'PUBLIC'" class="fa fa-lock-open p-tag p-tag-success"
+                    aria-hidden="true"></span>
+                  <!-- <span title="Publication Status" class="p-tag p-tag-info">{{
+                    study.submissionStatus
+                  }}</span> -->
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </p-dataView>
+      </div>
+    </div>
+  </div>
+</div>

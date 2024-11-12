@@ -1,0 +1,25 @@
+<div class="flex flex-auto flex-1 flex-column flex-wrap gap-2">
+    <div *ngFor="let card of cards" class="p-element flex flex-1">
+        <div class="p-card p-component w-6 flex flex-1 h-full">
+            <div class="p-card-body h-full flex flex-column">
+                <div class="p-card-title flex flex-grow-0">
+                    {{ card.title }}
+                </div>
+                <div class="p-card-content flex flex-grow-1">
+                    {{ card.content }}
+                </div>
+                <div class="p-card-footer flex flex-grow-0">
+                    <a *ngIf="card.linkType==='external'" pbutton="" rel="noopener noreferrer" target="_blank"
+                        class="p-element p-button p-component" style="margin-top: auto;" href="{{ card.link }}">
+                        <span aria-hidden="true" class="{{ card.icon }}"></span>&nbsp;{{ card.linkTitle }}</a>
+                    <p-button *ngIf="card.linkType==='internal'" [routerLink]="card.link"
+                        [ngStyle]="{ display: 'flex' }" routerLinkActive="router-link-active" ngClass="p-as-end">
+                        <span class="{{ card.icon }}" aria-hidden="true"></span>&nbsp;{{
+                        card.linkTitle
+                        }}
+                    </p-button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

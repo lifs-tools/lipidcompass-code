@@ -1,0 +1,99 @@
+name: lipidcompass_dev_auth
+services:
+  lcmysql:
+    platform: linux/amd64
+    image: mysql:5.7.44
+    ports:
+     - target: 3306
+       published: 3306
+       protocol: tcp
+       mode: host
+    secrets:
+      - keycloak_db_root_password
+      - keycloak_db_user_name
+      - keycloak_db_user_password
+    environment:
+      - MYSQL_DATABASE=keycloak
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/keycloak_db_root_password
+      - MYSQL_USER_FILE=/run/secrets/keycloak_db_user_name
+      - MYSQL_PASSWORD_FILE=/run/secrets/keycloak_db_user_password
+    restart: always
+    networks:
+     - lipidcompass_dev
+    volumes:
+     - lc-dev-mysql-volume:/var/lib/mysql
+  keycloak:
+    platform: linux/amd64
+    image: quay.io/keycloak/keycloak:16.1.1 
+    environment:
+     - KEYCLOAK_IMPORT=/tmp/lifs-realm.json -Dkeycloak.profile.feature.upload_scripts=enabled
+     - KEYCLOAK_USER_FILE=/run/secrets/keycloak_user_name
+     - KEYCLOAK_PASSWORD_FILE=/run/secrets/keycloak_user_password
+     - KEYCLOAK_IMPORT=/tmp/lifs-realm.json  
+     - DB_USER_FILE=/run/secrets/keycloak_db_user_name
+     - DB_PASSWORD_FILE=/run/secrets/keycloak_db_user_password
+     - DB_DATABASE=keycloak
+     - DB_VENDOR=mysql  
+     - DB_ADDR=lcmysql
+     - DB_PORT=3306
+     - "JDBC_PARAMS=useSSL=true&requireSSL=false&verifyServerCertificate=false"
+     - PROXY_ADDRESS_FORWARDING=true
+       #- KEYCLOAK_HOSTNAME=someHostName
+       #     - KEYCLOAK_WELCOME_THEME=keycloak 
+       #lifs
+       #     - KEYCLOAK_DEFAULT_THEME=keycloak
+    ports:
+     - 28080:8080
+    secrets:
+     - keycloak_user_name
+     - keycloak_user_password
+     - keycloak_db_user_name
+     - keycloak_db_user_password  
+    networks:
+     - proxy
+     - lipidcompass_dev
+    volumes:
+     - ${PWD}/keycloak/themes/lifs:/opt/jboss/keycloak/themes/lifs
+     - keycloak-dev-volume:/opt/jboss/keycloak/standalone/data
+     - ${PWD}/keycloak/lifs-realm.json:/tmp/lifs-realm.json  
+     - ${PWD}/keycloak:/tmp/keycloak  
+       #- ${PWD}/keycloak/standalone.xml:/opt/jboss/keycloak/standalone/configuration/standalone.xml  
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 60s
+        #      placement:
+        #        constraints:
+        #         - node.role != manager
+        #         - node.hostname == do1-aps-lardo
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=8080"
+        - "traefik.frontend.rule=PathPrefix: /auth"
+        - "traefik.frontend.entryPoints=http,https"
+        - "traefik.docker.network=proxy"
+        - "traefik.backend.loadbalancer.sticky=true"
+        - "traefik.frontend.passHostHeader=true"
+secrets:
+  keycloak_user_name:
+    file: ./.keycloak_user_name
+  keycloak_user_password:
+    file: ./.keycloak_user_password
+  keycloak_db_root_password:
+    file: ./.keycloak_db_root_password
+  keycloak_db_user_name:
+    file: ./.keycloak_db_user_name
+  keycloak_db_user_password:
+    file: ./.keycloak_db_user_password
+networks:
+  lipidcompass_dev:
+    external: true
+  proxy:
+    external: true
+volumes:
+  lc-dev-mysql-volume:
+    external: true
+  keycloak-dev-volume:
+    external: true

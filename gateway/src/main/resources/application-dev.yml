@@ -1,0 +1,180 @@
+# 
+# Copyright 2021 The LipidCompass Developers.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# 
+# Development profile configuration file for Lipid Compass Gateway.
+---
+logging:
+    level:
+        org.springframework: INFO
+        org.springframework.cloud.gateway: TRACE
+        org.springframework.http.server.reactive: DEBUG
+        reactor.netty: INFO
+
+spring:
+    application:
+        name: lipidcompass-gateway
+    cloud:
+        config:
+            enabled: false
+        gateway:
+            filter:
+                secure-headers:
+                    x-frame-options: allow-from http://localhost/
+            forwarded:
+                enabled: true
+            x-forwarded:
+                enabled: true
+            default-filters: 
+                # pass down any JWT token we already have
+                - TokenRelay=
+                # remove any pre-existing cookies, we probably do not need them downstream
+                - RemoveRequestHeader=Cookie
+                # remove duplicate CORS headers
+                - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+            discovery:
+                locator:
+                    enabled: true
+                    lower-case-service-id: true
+            globalcors:
+                corsConfigurations:
+                  '[/**]':
+                    allowedOrigins: "*"
+                    allowedMethods: "*"
+                    allowedHeaders: 
+                        - "Authorization"
+                        - "Content-Type"
+                        - "Accept"
+                        - "X-Requested-With"
+                        - "X-CSRF-TOKEN"
+                        - "XSRF-TOKEN"
+                        - "X-Forwarded-By"
+                        - "X-Forwarded-For"
+                        - "X-Forwarded-Host"
+                        - "X-Forwarded-Proto"
+            httpserver:
+                wiretap: true
+            httpclient:
+                wiretap: true
+            routes:
+              - id: lipidcompass-backend-service
+                uri: lb://lipidcompass-backend
+                predicates:
+                  - Path=/lipidcompass-backend/**
+                filters:
+                  - RewritePath=/lipidcompass-backend/(?<segment>.*), /$\{segment}
+              - id: lipidcompass-data-importer-service
+                uri: lb://lipidcompass-data-importer
+                predicates:
+                  - Path=/lipidcompass-data-importer/**
+                filters:
+                  - RewritePath=/lipidcompass-data-importer/(?<segment>.*), /$\{segment}
+              - id: lipidcompass-ui-service
+                uri: lb://lipidcompass-ui
+                predicates:
+                  - Path=/ui/**
+                filters:
+                  - RewritePath=/lipidcompass-ui/(?<segment>.*), /$\{segment}
+#              - id: openapi-proxy
+#                uri: http://localhost:${server.port}
+#                predicates:
+#                  - Path=/api/v3/api-docs/**
+#                filters:
+#                  - RewritePath=/api/v3/api-docs/(?<path>.*), /$\{path}/api/v3/api-docs
+              - id: openapi
+                uri: http://localhost:${server.port}
+                predicates:
+                  - Path=/v3/api-docs/**
+                filters:
+                  - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
+#              - id: swagger-ui-0
+#                uri: http://localhost:${server.port}
+#                predicates:
+#                  - Path=/api
+#                filters:
+#                  - RedirectTo=302, /api/swagger-ui.html, true
+#              - id: swagger-ui-1
+#                uri: http://localhost:${server.port}
+#                predicates:
+#                  - Path=/api/**
+#                filters:
+#                  - RewritePath=/api/swagger-ui.html, /webjars/swagger-ui/index.html
+#                  - RewritePath=/api/(?<segment>.*), /webjars/swagger-ui/$\{segment}
+###                # default route back to angular application
+#              - id: default
+#                uri: lb://lipidcompass-ui
+#                predicates:
+#                  - Path=/**
+#                filters:
+#                  - RewritePath=/lipidcompass-ui/(?<segment>.*),/$\{segment}
+#              - id: zzzdefault
+#                uri: http://localhost:${server.port}
+#                predicates:
+#                  - Path=/
+#                filters:
+#                   - RedirectTo=302, /lipidcompass-ui, true
+    mvc:
+        throw-exception-if-no-handler-found: true
+
+    security:
+        oauth2:
+            # register keycloak as an OAUTH2 authorization server, gateway acts as a client to extract role information
+            client:
+                registration:
+                    keycloak:
+                        client-id: lipidcompass
+                        client-secret: ${KEYCLOAK_CLIENT_SECRET}
+                        authorization-grant-type: authorization_code
+                        redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+                        scope: openid,profile,email
+                provider:
+                    keycloak:
+                        # https://medium.com/@hantsy/secures-your-application-with-spring-security-5-and-keycloak-2804ee912b0f and https://github.com/hantsy/keycloak-springsecurity5-sample
+                        authorization-uri: ${KEYCLOAK_REALM_URI}/protocol/openid-connect/auth
+                        token-uri: ${KEYCLOAK_REALM_URI}/protocol/openid-connect/token
+                        user-info-uri: ${KEYCLOAK_REALM_URI}/protocol/openid-connect/userinfo
+                        jwk-set-uri: ${KEYCLOAK_REALM_URI}/protocol/openid-connect/certs
+                        user-name-attribute: preferred_username
+                        user-info-authentication-method: form
+            # gateway acts as an OAUTH2 resourceserver, protecting and proxying to downstream services, jwts are validated
+            resourceserver:
+                jwt:
+                    # settings for oauth2 resourcesserver (https://docs.spring.io/spring-security/site/docs/current/reference/html5/#oauth2resourceserver-jwt-jwkseturi)
+                    issuer-uri: ${KEYCLOAK_REALM_URI}
+                    jwk-set-uri: ${KEYCLOAK_REALM_URI}/protocol/openid-connect/certs
+
+server:
+    port: 8090
+    forward-headers-strategy: native
+    use-forward-headers: true
+    netty:
+        validate-headers: true
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${EUREKA_URI:http://localhost:28092/eureka}
+    instance:
+        preferIpAddress: true
+
+springdoc:
+  cache:
+    disabled: true
+  version: '@springdoc.version@'
+  swagger-ui:
+#    use-root-path: true
+    disable-swagger-default-url: true
+    operationsSorter: alpha
+  api-docs:
+    version: openapi_3_1

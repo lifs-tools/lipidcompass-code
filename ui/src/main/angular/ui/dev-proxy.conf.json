@@ -1,0 +1,20 @@
+{
+  "/lipidcompass-backend": {
+    "target": "http://localhost:8090",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin":true
+  },
+  "/lipidcompass-data-importer": {
+    "target": "http://localhost:8090",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin":true
+  },
+  "/lipidcompass-solr": {
+    "target": "http://localhost:8090",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin":true
+  }
+}

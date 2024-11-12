@@ -1,0 +1,131 @@
+<p-card *ngIf="!study" header="Loading data...">
+    <div class="p-card-content">
+        <div class="p-grid">
+            <div class="p-col-12">
+                <p-progressSpinner></p-progressSpinner>
+            </div>
+        </div>
+    </div>
+</p-card>
+<p-card *ngIf="study">
+    <ng-template pTemplate="title" *ngIf="detailView">
+        <div class="p-grid">
+            <div class="p-card-title p-col-11">{{ study.name }}</div>
+            <div class="p-col-1 p-p-1 m-p-1">
+                <span
+                    title="Visibility"
+                    *ngIf="study.visibility === 'PRIVATE'"
+                    class="fa fa-lock p-tag p-tag-danger"
+                    aria-hidden="true"
+                ></span>
+                <span
+                    title="Visibility"
+                    *ngIf="study.visibility === 'RESTRICTED'"
+                    class="fa fa-lock p-tag p-tag-warning"
+                    aria-hidden="true"
+                ></span>
+                <span
+                    title="Visibility"
+                    *ngIf="study.visibility === 'PUBLIC'"
+                    class="fa fa-lock-open p-tag p-tag-success"
+                    aria-hidden="true"
+                ></span>
+                <!-- <span title="Publication Status" class="p-tag p-tag-info">{{
+      study.submissionStatus
+    }}</span> -->
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="subtitle" *ngIf="detailView">
+        <div class="p-card-subtitle">{{ study.id }}</div>
+    </ng-template>
+    <div class="p-card-content">
+        <div class="p-fluid">
+            <div class="p-col-11 p-p-2 m-p-2">
+                <div class="p-grid">
+                    <div class="p-col-3">
+                        <span
+                            class="fa fa-flask fa-fw"
+                            aria-hidden="true"
+                        ></span
+                        >&nbsp;Title
+                    </div>
+                    <div class="p-col-9">
+                        <a [routerLink]="['/study/' + study.id]"
+                            ><b>{{ study.name }}</b></a
+                        >
+                    </div>
+                </div>
+                <div class="p-grid">
+                    <div class="p-col-3">
+                        <span
+                            class="fas fa-tags fa-fw"
+                            aria-hidden="true"
+                        ></span
+                        >&nbsp;Classifications
+                    </div>
+                    <div class="p-col-9 p-d-flex p-flex-wrap">
+                        <span
+                            class="p-tag m-p-1 classification"
+                            *ngFor="
+                                let cvParam of study.cvTermReferences
+                                    | orderBy: ['cvParam.name']:['desc']
+                            "
+                        >
+                        <app-olslink [cvParam]="cvParam"></app-olslink>
+                        </span>
+                    </div>
+                </div>
+                <div class="p-grid">
+                    <div class="p-col-3">
+                        <span
+                            class="fas fa-tags fa-fw"
+                            aria-hidden="true"
+                        ></span
+                        >&nbsp;Datasets
+                    </div>
+                    <div class="p-col-9">
+                        <div class="p-grid p-p-1 p-m-1">
+                            <app-dataset-card
+                                *ngFor="
+                                    let mzTabResult of study.mzTabResultReferences
+                                        | orderBy: ['mzTabResult.id']:['asc']
+                                "
+                                [detailView]="false"
+                                [showClassifications]="false"
+                                [mzTabResult]="mzTabResult"
+                                ngClass="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-6"
+                            ></app-dataset-card>
+                        </div>
+                    </div>
+                    <!-- <span
+              class="p-tag m-p-1 classification"
+              *ngFor="let mzTabResult of study.mzTabResultReferences | orderBy: ['mzTabResult.id'] :['asc']"
+            >
+              <a [routerLink]="['/dataset', mzTabResult.id]"
+                title="{{ mzTabResult?.mzTabSummary?.title }}"
+                >{{ mzTabResult?.mzTabSummary?.title }} ({{ mzTabResult?.id }})</a
+              >
+            </span> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button
+            *ngIf="study['_links']['self']"
+            (onClick)="this.openDatasetComparison()"
+            routerLinkActive="router-link-active"
+        >
+            <span class="fa fa-exchange-alt" aria-hidden="true"></span
+            >&nbsp;Compare Datasets
+        </p-button>
+        <!-- <p-button
+      *ngIf="study['_links']['self']"
+      [routerLink]="['/dataset', study.id]"
+      routerLinkActive="router-link-active"
+    >
+      <span class="fa fa-angle-down" aria-hidden="true"></span>&nbsp;View datasets
+    </p-button> -->
+    </ng-template>
+</p-card>

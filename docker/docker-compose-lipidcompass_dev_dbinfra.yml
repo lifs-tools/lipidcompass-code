@@ -1,0 +1,244 @@
+name: lipidcompass_dev_dbinfra
+services:
+  registry:
+    platform: linux/amd64
+    image: docker.lifs-tools.org/lifs/lipidcompass-registry:${LC_VERSION}
+    ports:
+      - target: 8761
+        published: 28092
+        protocol: tcp
+    networks:
+      - proxy
+      - lipidcompass_dev  
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 60s
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=8761"
+        - "traefik.frontend.rule=Host:registry.lc-dev.traefik"
+        - "traefik.frontend.entryPoints=http,https"
+        - "traefik.docker.network=proxy"
+        - "traefik.backend.loadbalancer.sticky=true"
+        - "traefik.frontend.passHostHeader=true"
+  gateway:
+    image: docker.lifs-tools.org/lifs/lipidcompass-gateway:${LC_VERSION}
+    environment:
+      - "SPRING_PROFILES_ACTIVE=dev"
+      - "KEYCLOAK_CLIENT_SECRET=yAfrZMHBh0OOaA5eQVYszTepEI9bJeF1"
+      - "KEYCLOAK_REALM_URI=http://host.docker.internal:28080/auth/realms/lifs"
+      - "EUREKA_URI=http://registry:8761/eureka"
+    ports:
+      - target: 8090
+        published: 28095
+        protocol: tcp
+        mode: ingress
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - proxy
+      - lipidcompass_dev
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 60s
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=8090"
+        - "traefik.frontend.rule=Host: gateway.lc-dev.traefik;"
+        - "traefik.frontend.entryPoints=http,https"
+        - "traefik.docker.network=proxy"
+        - "traefik.backend.loadbalancer.sticky=true"
+        - "traefik.frontend.passHostHeader=true"
+  lipidspace:
+    platform: linux/amd64  
+    image: docker.lifs-tools.org/lifs/lipidspace:latest
+    ports:
+      - target: 8888
+        published: 28100
+        protocol: tcp
+    networks:
+      - lipidcompass_dev  
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 60s
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=8888"
+        - "traefik.frontend.rule=Host:lipidspace.lc-dev.traefik"
+        - "traefik.frontend.entryPoints=http,https"
+        - "traefik.docker.network=proxy"
+        - "traefik.backend.loadbalancer.sticky=true"
+        - "traefik.frontend.passHostHeader=true"
+  # cheminformaticsms:
+  #   platform: linux/amd64
+  #   image: nfdi4chem/cheminformatics-microservice:v2.1.1
+  #   ports:
+  #     - target: 80
+  #       published: 28101
+  #       protocol: tcp
+  #   networks:
+  #     - lipidcompass_dev
+  #   deploy:
+  #     replicas: 1
+  #     restart_policy:
+  #       condition: any
+  #       delay: 5s
+  #       window: 60s
+  arangodb:
+    platform: ${PLATFORM}
+    image: arangodb:3.12
+    ports:
+     - target: 8529
+       published: 28091
+       protocol: tcp
+#    entrypoint:       
+#     - arangod
+#     - "--rocksdb.write-buffer-size=128MiB"
+#     - "--rocksdb.max-write-buffer-number=10"
+#     - "--rocksdb.use-direct-reads=true"  
+#     - "--rocksdb.use-direct-io-for-flush-and-compaction=true"
+#     - "--database.auto-upgrade"
+    environment:
+            #- ARANGO_NO_AUTH=1
+            #     - ARANGO_RANDOM_ROOT_PASSWORD=1
+     - "ARANGO_ROOT_PASSWORD_FILE=/run/secrets/lipidcompass_dev_infra_arangodb"
+     - "ARANGO_STORAGE_ENGINE=rocksdb"
+    secrets:
+     - lipidcompass_dev_infra_arangodb
+    restart: always
+    networks:
+     - proxy
+     - lipidcompass_dev
+    volumes:
+     - ${PWD}/arangodb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+     - ${PWD}/../data:/home/arangodb3/bulk
+#     - arangodb-dev-data-volume:/var/lib/arangodb3
+#     - arangodb-dev-apps-volume:/var/lib/arangodb3-apps
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 8192m
+        reservations:
+          memory: 8192m
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 60s
+        #      placement:
+              #        constraints:
+              #         - node.role != manager
+              #         - node.hostname == do1-aps-lardo
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=8529"
+        - "traefik.arangodbhost.frontend.rule=Host:arangodb.lc-dev.traefik"
+        - "traefik.arangodbpath.frontend.rule=PathPrefix: /arangodb;ReplacePathRegex:^/arangodb/(.*) /$$1"
+        - "traefik.frontend.entryPoints=http,https"
+        - "traefik.docker.network=proxy"
+        - "traefik.backend.loadbalancer.sticky=true"
+        - "traefik.frontend.passHostHeader=true"
+  swarm-cronjob:
+    platform: linux/amd64
+    image: crazymax/swarm-cronjob
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      - "TZ=Europe/Berlin"
+      - "LOG_LEVEL=info"
+      - "LOG_JSON=false"
+    networks:
+      - lipidcompass_dev
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  arangodb-backup:
+    platform: ${PLATFORM}
+    image: arangodb:3.12
+    entrypoint: &script
+     - sh
+     - -c
+     - |
+       ROOT_PWD=$$(cat /var/run/secrets/lipidcompass_dev_infra_arangodb)
+       BACKUP_DIR="/backup/$$(date +'%d-%m-%Y_%T')"
+       mkdir "$$BACKUP_DIR"
+       arangodump --output-directory "$$BACKUP_DIR" --compress-output --all-databases true --server.username root --server.endpoint "http+tcp://arangodb:8529" --server.password "$${ROOT_PWD}"
+    environment:
+     - "ARANGO_ROOT_PASSWORD_FILE=/run/secrets/lipidcompass_dev_infra_arangodb"
+    secrets:
+     - lipidcompass_dev_infra_arangodb
+    restart: always
+    volumes:
+     - arangodb-dev-backup-volume:/backup
+    networks:
+     - lipidcompass_dev
+    deploy:
+      mode: replicated
+      replicas: 0 
+      resources:
+        limits:
+          memory: 1024m
+        reservations:
+          memory: 512m
+      restart_policy:
+        condition: none
+      labels:
+        - "swarm.cronjob.enable=true"
+        # run once an hour: 0 0 * * * *, run once a day at midnight: 0 0 0 * * *
+        - "swarm.cronjob.schedule=0 0 10 * * *"
+        - "swarm.cronjob.skip-running=true"
+        - "swarm.cronjob.registry-auth=false"
+        - "swarm.cronjob.query-registry=false"
+        - "traefik.enable=false"
+  minio-1:
+    platform: linux/amd64
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    hostname: minio-1
+    environment:
+      - "MINIO_ROOT_PASSWORD_FILE=/run/secrets/lipidcompass_dev_infra_minio_password"
+      - "MINIO_ROOT_USER_FILE=/run/secrets/lipidcompass_dev_infra_minio_user"  
+    secrets: 
+      - lipidcompass_dev_infra_minio_password
+      - lipidcompass_dev_infra_minio_user
+    networks:
+      - proxy
+      - lipidcompass_dev
+    ports:
+      - target: 9000
+        published: 9000
+        protocol: tcp
+      - target: 9001
+        published: 9001
+        protocol: tcp
+    volumes:
+      - lc-dev-minio:/data
+secrets:
+  lipidcompass_dev_infra_arangodb:
+    file: ./.lipidcompass_dev_infra_arangodb
+  lipidcompass_dev_infra_minio_password:
+    file: ./.lipidcompass_dev_infra_minio_password
+  lipidcompass_dev_infra_minio_user:
+    file: ./.lipidcompass_dev_infra_minio_user
+networks:
+  lipidcompass_dev:
+    external: true
+  proxy:
+    external: true
+volumes:
+  #arangodb-dev-data-volume:
+  arangodb-dev-backup-volume:
+  # arangodb-dev-export-volume:     
+  # arangodb-dev-apps-volume:
+  lc-dev-minio:

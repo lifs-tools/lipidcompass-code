@@ -1,0 +1,119 @@
+<div class="p-grid lipid-summary">
+  <div class="p-col-12 p-md-12">
+    <!--<p-breadcrumb [model]="breadcrumbs" (click)="selectBreadcrumb(item)"></p-breadcrumb>-->
+    <ul>
+      <li *ngFor="let item of breadcrumbs">
+        {{item | json}}
+        <!--<a *ngIf="item['data'] && item['data']['content']" href="#/lipids/{{item['data']['content']['name']}}">{{item['data']['content']['name']}}</a>-->
+      </li>
+    </ul>
+  </div>
+  <!--<h3>{{selectedItem.label}}</h3>-->
+  <!--
+    <form class="lc-ro-form" *ngIf="selectedItemSummary['data'] && selectedItemSummary['data']['_links']">
+            <div *ngFor="let key of selectedItemSummary['data']['_links'] | keys" class="form-group form-group-sm row">
+                <label for="{{key}}" class="col-sm-3 control-label">{{key | uppercase | translate}}</label>
+                <ng-container><input type="text" class="form-control" id="{{key['href']}}" required value="{{selectedItemSummary['data']['_links'][key]['href']}}" [readonly]="true"></ng-container>
+            </div>
+    </form>
+-->
+  <div class="p-col-12 p-md-12">
+    <div class="p-grid">
+      <!-- <label>{{lipidId}}</label>
+    <label *ngIf="lipid">{{lipid.id}}</label> -->
+      <div class="p-col-12 p-md-12 homeCard">
+        <!-- use | async to resolve lipid observable -->
+        <app-lipid-card [lipid]="lipid | async" [title]="'Lipid Detail'"></app-lipid-card>
+      </div>
+      <!-- <div class="p-col-4 p-md-4 homeCard">
+
+      </div> -->
+      <!-- <p-card header="{{ lipid.normalizedShorthandName }}" subheader="{{ lipid.lipidLevel | translate }}" class="col-sm-9"
+      styleClass="ui-p-card-shadow" *ngIf="selectedItemSummary['data'] && selectedItemSummary['data']['content']">
+      <p-header>
+        <div *ngIf="selectedItemSummary['data']['content']['smileSvg']" class="p-grid">
+          <div class="p-col-12">
+            <app-svg-view [svg]="selectedItemSummary['data']['content']['smileSvg']"></app-svg-view>
+          </div>
+        </div>
+        <div *ngIf="selectedItemSummary['data']['content']['model']" class="p-grid">
+          <div class="p-col-12">
+            <app-molecule-view [mol]="selectedItemSummary['data']['content']['model']"></app-molecule-view>
+          </div>
+        </div>
+      </p-header>
+      <div>
+        <div *ngFor="let key of selectedItemSummary['data']['content'] | keys" class="form-group form-group-sm row">
+          <label for="{{key}}" class="col-sm-3 control-label">{{key | uppercase | translate}}</label>
+          <div class="col-sm-9" [ngSwitch]="key">
+            <ng-container *ngSwitchCase="'isotopes'">
+              <p-chart type="line" [data]="chartData"></p-chart>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+              <div id="{{key}}">{{selectedItemSummary['data']['content'][key]}}</div>
+            </ng-container>
+          </div>
+        </div>
+
+      </div>
+    <p-footer>
+      <button pButton type="button" label="Parent" icon="fa-angle-up" *ngIf="selectedItemSummary['data'] && selectedItemSummary['data']['_links']"></button>
+      <button pButton type="button" label="Children" icon="fa-angle-down" class="ui-button-secondary" *ngIf="selectedItemSummary['data'] && selectedItemSummary['data']['_links']"></button>
+    </p-footer>
+    </p-card> -->
+    </div>
+  </div>
+  <!--
+    <p-card header="selectedItem['data']['content']['name']" subheader="selectedItem['data']['content']['level'] | translate" class="col-sm-9" styleClass="ui-p-card-shadow" *ngIf="selectedItemSummary['data'] && selectedItemSummary['data']['content']">
+        <p-header>
+
+        </p-header>
+        <div>
+            <div *ngFor="let key of selectedItem['data']['content'] | keys" class="form-group form-group-sm row">
+                <label for="{{key}}" class="col-sm-3 control-label">{{key | uppercase | translate}}</label>
+                <div class="col-sm-9" [ngSwitch]="key">
+                    <ng-container *ngSwitchDefault><input type="text" class="form-control" id="{{key}}" required value="{{selectedItem['data']['content'][key]}}" [readonly]="true"></ng-container>
+                </div>
+            </div>
+
+        </div>
+        <p-footer>
+
+        </p-footer>
+    </p-card>
+-->
+  <!--
+    <form class="lc-ro-form" *ngIf="selectedItemSummary['data'] && selectedItemSummary['data']['content']">
+        <div *ngFor="let key of selectedItemSummary['data']['content'] | keys" class="form-group form-group-sm row">
+            <label for="{{key}}" class="col-sm-3 control-label">{{key | uppercase | translate}}</label>
+            <div class="col-sm-9" [ngSwitch]="key">
+                <ng-container *ngSwitchCase="'level'">
+                    <ul class="list-inline fa-ul">
+                        <li class="list-inline-item">
+                            <i class="fa-li fa fa-level-down"></i>{{selectedItemSummary['data']['content']['level'] | translate}}
+                        </li>
+                    </ul>
+                </ng-container>
+                <ng-container *ngSwitchCase="'xrefs'">
+                    <ul class="fa-ul">
+                        <li *ngFor="let xref of selectedItemSummary['data']['content']['xrefs']"><i class="fa-li fa fa-link"></i><a href="{{xref['url']}}">{{xref['resource']}}</a></li>
+                    </ul>
+                </ng-container>
+                <ng-container *ngSwitchCase="'papers'">
+                    <ul class="fa-ul">
+                        <li *ngFor="let paper of selectedItemSummary['data']['content']['papers']"><i class="fa-li fa fa-book"></i><a href="{{paper['url']}}">{{paper['resource']}}</a></li>
+                    </ul>
+                </ng-container>
+                <ng-container *ngSwitchCase="'isotopes'">
+                    <p-chart type="line" [data]="chartData"></p-chart>
+                </ng-container>
+                <ng-container *ngSwitchCase="'ERROR'">
+                    <input type="text" class="form-control" id="{{key}}" required value="{{selectedItemSummary['data']['content'][key]}}" [readonly]="true">
+                </ng-container>
+                <ng-container *ngSwitchCase="'level'"><input type="text" class="form-control" id="{{key}}" required value="{{selectedItemSummary['data']['content'][key] | translate}}" [readonly]="true"></ng-container>
+                <ng-container *ngSwitchDefault><input type="text" class="form-control" id="{{key}}" required value="{{selectedItemSummary['data']['content'][key]}}" [readonly]="true"></ng-container>
+            </div>
+        </div>
+    </form>
+-->
+</div>

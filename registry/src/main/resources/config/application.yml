@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: lipidcompass-registry
+    #  cloud:
+    #    inetutils: 
+    #      preferredNetworks:
+    #        - ${PREFERRED_NETWORK:10.0.20}
+
+server:
+  port: ${LC_REGISTRY_PORT:8761}
+
+eureka:
+  instance:
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    preferIpAddress: false
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    server:
+      waitTimeInMsWhenSyncEmpty: 0

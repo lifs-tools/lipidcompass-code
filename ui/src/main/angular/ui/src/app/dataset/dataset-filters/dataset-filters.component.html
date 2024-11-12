@@ -1,0 +1,17 @@
+<p-scroller [items]="filters" [itemSize]="10" scrollHeight="10rem">
+    <ng-template pTemplate="item" let-filter let-options="options">
+        <div class="flex align-items-center gap-2">
+            <abbr title="{{ filter.description}}">{{ filter.name }}</abbr>
+            <p-button icon="pi pi-plus" [text]="true" size="small"></p-button>
+        </div>
+        <!-- <div class="flex align-items-center p-2" [ngClass]="{ 'surface-ground': options.odd }" style="height: 50px;">{{ item }}</div> -->
+    </ng-template>
+</p-scroller>
+<!-- <p-listbox [options]="filters" [(ngModel)]="selectedFilters" [multiple]="true" [checkbox]="false" [filter]="false" optionLabel="name" onChange="updateSelection($event)" styleClass="nogutter">
+    <ng-template let-filter pTemplate="item">
+        <div class="flex align-items-center gap-2">
+            <abbr title="{{ filter.description}}">{{ filter.name }}</abbr>
+            <p-button icon="pi pi-plus" [text]="true" size="small"></p-button>
+        </div>
+    </ng-template>
+</p-listbox> -->

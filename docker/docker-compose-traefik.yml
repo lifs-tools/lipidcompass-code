@@ -1,0 +1,39 @@
+name: lipidcompass_dev_traefik
+services:
+  traefik:
+    image: traefik:v1.7.34
+    platform: linux/amd64
+    command: --web --docker --docker.swarmmode --docker.watch --docker.domain=traefik --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - proxy 
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role==manager]
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '512M'
+        reservations:
+          cpus: '0.1'
+          memory: '64M'
+      labels:
+        - "traefik.domain=traefik"
+
+networks:
+  proxy:
+    external: true

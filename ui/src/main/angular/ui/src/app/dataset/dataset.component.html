@@ -1,0 +1,143 @@
+<div class="grid p-2">
+  <div class="col-12">
+    <p-panel header="Filters" [toggleable]="true" [collapsed]="false" [showHeader]="true" styleClass="fillPanel">
+      <div class="p-fluid">
+        <div class="p-field grid m-1">
+          <label for="selectedMzTabResultsForComparisonChips" class="col-2">Datasets</label>
+          <p-chips class="col-10 p-md-10" id="selectedMzTabResultsForComparisonChips"
+            [(ngModel)]="selectedMzTabResultsForComparison" (onRemove)="handleSelectedMzTabResultRemoved($event)"
+            (keydown)="onChange($event)">
+            <ng-template let-mzTabResult pTemplate="item">
+              <span class="">{{ mzTabResult }}</span>
+            </ng-template>
+          </p-chips>
+        </div>
+        <div class="p-field grid m-1">
+          <label for="queryComponents" class="col-2">Facets</label>
+          <p-chips class="col-10" id="queryComponents" [(ngModel)]="selectedFacets"
+            (onRemove)="handleSelectedFacetRemoved($event)" (keydown)="onChange($event)">
+            <ng-template let-facet pTemplate="item">
+              <span class="">{{ facet.name }} ({{ facet.count }})</span>
+            </ng-template>
+          </p-chips>
+        </div>
+      </div>
+    </p-panel>
+  </div>
+  <div class="col-12">
+    <p-panel header="Lipid Names" [toggleable]="true" [collapsed]="true" [showHeader]="true" styleClass="fillPanel">
+      <p-table [value]="repositoryLipids" [columns]="cols" styleClass="p-datatable-sm" responsiveLayout="scroll"
+        [(selection)]="selectedLipids">
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of columns">
+              {{ col.header }}
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+          <tr>
+            <td>
+              <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns">
+              {{ rowData[col.field] }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-panel>
+  </div>
+  <div class="col-3">
+    <div class="p-dataview p-component p-dataview-list border-botttom">
+      <div class="p-dataview-header">
+        <div class="flex flex-row justify-content-between flex-wrap align-content-center">
+          <p-header>Query</p-header>
+          <div class="flex flex-row justify-content-end flex-wrap align-content-center">
+            <span class="p-buttonset">
+              <p-button label="Update" icon="pi pi-search" (click)="updateQuery(this.query)"></p-button>
+              <p-button label="Reset" icon="fas fa-undo" severity="danger" (click)="resetState()"></p-button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p-panel header="Lipid Names" [toggleable]="true" [collapsed]="false" [showHeader]="true" styleClass="fillPanel"
+      class="col-12 facetPanel" *ngIf="query">
+      <div class="flex flex-row justify-content-between flex-wrap align-content-center">
+        <label for="levelInput" class="col-12 md:col-3 lg:col-3 xl:col-3 lipidLevel">Level</label>
+        <p-dropdown class="col-12 md:col-9 lg:col-9 xl:col-9" [options]="level" [(ngModel)]="query.lipidLevel"
+          name="levelInput" [placeholder]="placeholder" id="levelInput" styleClass="lipidLevel"
+          [style]="{ width: '100%' }" [autoWidth]="false" (onChange)="levelInputOnChange($event)">
+        </p-dropdown>
+      </div>
+      <div class="flex flex-row justify-content-between flex-wrap align-content-center">
+        <label for="matchingModeInput" class="col-12 md:col-3 lg:col-3 xl:col-3 lipidLevel">Match</label>
+        <p-dropdown class="col-12 md:col-9 lg:col-9 xl:col-9" [options]="matchingModes" [(ngModel)]="query.matchMode"
+          name="matchingModeInput" [placeholder]="placeholder" id="matchingModeInput" styleClass="lipidLevel"
+          [style]="{ width: '100%' }" [autoWidth]="false" (onChange)="matchingModesOnChange($event)">
+        </p-dropdown>
+      </div>
+      <div class="flex flex-row justify-content-between flex-wrap align-content-center">
+        <label for="lipidNameInput" class="col-12 md:col-3 lg:col-3 xl:col-3 lipidLevel">Selection</label>
+        <p-multiSelect class="col-12 md:col-9 lg:col-9 xl:col-9" [options]="availableLipids" [(ngModel)]="query.names"
+          name="lipidNameInput" filterMatchMode="startsWith" [placeholder]="placeholder" id="lipidNameInput"
+          styleClass="lipidLevel" [style]="{ width: '100%' }" [autoWidth]="false"
+          (onChange)="lipidNameInputOnChange($event)">
+        </p-multiSelect>
+      </div>
+    </p-panel>
+    <p-panel *ngFor="let facet of query?.facets" header="{{
+        (facet?.referenceType | translate) +
+          ' (' +
+          facet?.facetValues.length +
+          ')'
+      }}" [toggleable]="true" [collapsed]="false" [showHeader]="true" styleClass="fillPanel" class="col-12 facetPanel">
+      <p-listbox [options]="facet?.facetValues" optionLabel="name" [multiple]="true"
+        [filter]="filter || facet?.facetValues.length > minFilter" styleClass="facetbox"
+        (onClick)="handleFacetSelection(facet.referenceType, $event)" [listStyle]="{ 'max-height': '150px' }">
+        <ng-template let-facetItem pTemplate="item">
+          <div class="facet-item">
+            <div class="facetItemLabel">
+              <abbr title="{{ facetItem.accession }}">{{
+                facetItem.name
+                }}</abbr>
+            </div>
+            <div class="facetItemValue">
+              {{ facetItem.count }}
+            </div>
+          </div>
+        </ng-template>
+      </p-listbox>
+    </p-panel>
+  </div>
+  <div class="col-9">
+    <p-dataView #mzTabResultsDataView [value]="mzTabResultData" id="mzTabResultsDataView" [loading]="loading"
+      [paginator]="true" [totalRecords]="totalRecords" [rows]="10" layout="list">
+      <ng-template pTemplate="header">
+        <div class="flex flex-row justify-content-between flex-wrap align-content-center">
+          <p-header>Datasets</p-header>
+          <button pButton type="button" class="p-button-success" (click)="addToSelection($event)" label="+"
+            icon="fa fa-cart-arrow-down" [disabled]="this.selectedMzTabResults.length < 1"></button>
+          <button pButton type="button" class="p-button-primary" (click)="compare($event)" label="Compare Selection"
+            icon="fa fa-exchange-alt" [disabled]="comparisonDisabled()"></button>
+          <!-- <p-dataViewLayoutOptions></p-dataViewLayoutOptions> -->
+        </div>
+      </ng-template>
+      <ng-template let-results pTemplate="list">
+        <div class="col-12" *ngFor="let mzTabResult of results; let first = first">
+          <div class="grid" [ngClass]="{ 'border-top-1 surface-border': !first }">
+            <div class="col-1">
+              <p-checkbox name="mztabname" inputId="{{ mzTabResult.id }}" value="{{ mzTabResult.id }}"
+                [(ngModel)]="selectedMzTabResults" ngClass="pt-3"></p-checkbox>
+            </div>
+            <app-dataset-card [mzTabResult]="mzTabResult" [detailView]="false" ngClass="col-11"></app-dataset-card>
+          </div>
+        </div>
+      </ng-template>
+    </p-dataView>
+  </div>
+</div>

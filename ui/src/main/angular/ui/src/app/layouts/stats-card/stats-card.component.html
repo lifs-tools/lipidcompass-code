@@ -1,0 +1,29 @@
+<p-card class="flex align-self-auto min-w-min w-20rem max-w-30rem" [style]="{'backgroundColor': statsCard?.cardBackgroundColor, 'padding': '1rem', 'width': 'inherit'}">
+    <div class="flex justify-content-between gap-2">
+        <div class="flex flex-column gap-1">
+            <!-- 
+                titleColor: string;
+    backgroundColor: string;
+    textColor: string;
+    iconBackgroundColor: string;
+    iconForegroundColor:
+            -->
+            <span [ngClass]="statsCard?.titleCssClasses">{{ statsCard?.title }}</span>
+            <!-- option 1: we have a link defined, then create a span containing the value as a link -->
+            <span [ngClass]="statsCard?.cardTextCssClasses" *ngIf="statsCard?.linkType==='external'"><a
+                    href="{{ statsCard?.link }}" rel="noopener noreferrer" target="_blank"
+                    title="{{ statsCard?.linkTitle }}">{{ statsCard?.value | number: "1.0-0":"en-US" }}{{
+                    statsCard?.unit }}</a></span>
+            <!-- option 2: we don't have a link defined, then create a span containing the value -->
+            <span [ngClass]="statsCard?.cardTextCssClasses" *ngIf="statsCard?.linkType==='internal'"><a
+                    [routerLink]="statsCard?.link" routerLinkActive="router-link-active"
+                    title="{{ statsCard?.linkTitle }}">{{ statsCard?.value | number: "1.0-0":"en-US" }}</a></span>
+            <span class="font-bold text-lg" *ngIf="statsCard?.linkType==='none'">{{ statsCard.value | number:
+                "1.0-0":"en-US" }}</span>
+        </div>
+        <span class="w-4rem h-4rem border-circle inline-flex justify-content-center align-items-center text-center"
+            [style]="{ 'background-color': statsCard?.iconBackgroundColor, color: statsCard?.iconForegroundColor }">
+            <p-avatar [ngClass]="statsCard?.icon" styleClass="mr-2" size="xlarge" />
+        </span>
+    </div>
+</p-card>

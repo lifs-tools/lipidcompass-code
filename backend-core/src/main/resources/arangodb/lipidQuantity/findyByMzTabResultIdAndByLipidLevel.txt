@@ -1,0 +1,36 @@
+WITH 
+  lipidQuantity,
+  lipids,
+  parameters
+LET results = (
+    FOR q IN lipidQuantity
+      FILTER q.visibility == "PUBLIC"
+      FILTER q.mzTabResultId == @mzTabResultId
+      LET 
+        lipid = DOCUMENT("lipids", q.lipid), 
+        quantificationUnitParam = DOCUMENT("parameters", q.quantificationUnit)
+      COLLECT
+        nameForLevel = lipid.@nameAttributeForLevel,
+        quantificationUnitParamName = quantificationUnitParam.name,
+        quantificationUnitParamAccession = quantificationUnitParam.accession
+      AGGREGATE
+        sumAssayQuantity = SUM(q.assayQuantity),
+        countAssayQuantity = COUNT(q.assayQuantity)
+      RETURN {
+        mzTabResultId: @mzTabResultId,
+        quantificationUnitParamName,
+        quantificationUnitParamAccession,
+        x: nameForLevel,
+        y: sumAssayQuantity,
+        groupCount: countAssayQuantity 
+      }
+)
+RETURN {
+    mzTabResultId: @mzTabResultId,
+    lipidLevel: @nameAttributeForLevel,
+    quantificationUnitParamName: FIRST(UNIQUE(results[*].quantificationUnitParamName)),
+    quantificationUnitParamAccession: FIRST(UNIQUE(results[*].quantificationUnitParamAccession)),
+    x: results[*].x,
+    y: results[*].y,
+    groupCount: results[*].groupCount
+}

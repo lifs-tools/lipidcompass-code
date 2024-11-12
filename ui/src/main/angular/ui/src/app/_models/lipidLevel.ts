@@ -1,0 +1,23 @@
+export type LipidLevel =
+    "NO_LEVEL"
+  | "UNDEFINED_LEVEL"
+  | "CATEGORY"
+  | "CLASS"
+  | "SPECIES"
+  | "MOLECULAR_SPECIES"
+  | "SN_POSITION"
+  | "STRUCTURE_DEFINED"
+  | "FULL_STRUCTURE"
+  | "COMPLETE_STRUCTURE";
+export const LipidLevel = {
+  NO_LEVEL: "NO_LEVEL" as LipidLevel,
+  UNDEFINED_LEVEL: "UNDEFINED_LEVEL" as LipidLevel,
+  CATEGORY: "CATEGORY" as LipidLevel,
+  CLASS: "CLASS" as LipidLevel,
+  SPECIES: "SPECIES" as LipidLevel,
+  MOLECULAR_SPECIES: "MOLECULAR_SPECIES" as LipidLevel,
+  SN_POSITION: "SN_POSITION" as LipidLevel,
+  STRUCTURE_DEFINED: "STRUCTURE_DEFINED" as LipidLevel,
+  FULL_STRUCTURE: "FULL_STRUCTURE" as LipidLevel,
+  COMPLETE_STRUCTURE: "COMPLETE_STRUCTURE" as LipidLevel,
+};

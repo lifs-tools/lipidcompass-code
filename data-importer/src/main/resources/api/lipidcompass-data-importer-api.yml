@@ -1,0 +1,616 @@
+openapi: 3.0.1
+info:
+  title: LipidCompass Data Importer API
+  version: "1"
+servers:
+- url: http://localhost:8088
+  description: Generated server url
+security:
+- BearerAuth: []
+- OpenID: []
+- OAuth2: []
+paths:
+  /jobs/submission:
+    post:
+      tags:
+      - job-controller
+      operationId: startSubmissionImportJob
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobSubmissionInputDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/EntityModelJobExecutionDto'
+  /jobs/start/{name}:
+    post:
+      tags:
+      - job-controller
+      operationId: startJob
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobFileInputDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/EntityModelJobExecutionDto'
+  /jobs/smiles/canonicalize:
+    post:
+      tags:
+      - job-controller
+      operationId: canonicalizeSmiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmilesDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/EntityModelSmilesDto'
+  /jobs/{jobId}:
+    get:
+      tags:
+      - job-controller
+      operationId: getJobStatus
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/EntityModelBatchStatus'
+  /jobs/files/{jobExecutionId}:
+    get:
+      tags:
+      - job-controller
+      operationId: listFiles
+      parameters:
+      - name: jobExecutionId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/CollectionModelEntityModelString'
+  /jobs/executions/{jobName}:
+    get:
+      tags:
+      - job-controller
+      operationId: findRunningJobExecutions
+      parameters:
+      - name: jobName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/CollectionModelEntityModelJobExecutionDto'
+  /jobs:
+    get:
+      tags:
+      - job-controller
+      operationId: getJobs
+      parameters:
+      - name: page
+        in: query
+        description: Zero-based page index (0..N)
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: size
+        in: query
+        description: The size of the page to be returned
+        required: false
+        schema:
+          type: integer
+          default: 20
+      - name: sort
+        in: query
+        description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/PagedModelEntityModelJobDto'
+  /jobs/:
+    get:
+      tags:
+      - job-controller
+      operationId: getJobs_1
+      parameters:
+      - name: page
+        in: query
+        description: Zero-based page index (0..N)
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: size
+        in: query
+        description: The size of the page to be returned
+        required: false
+        schema:
+          type: integer
+          default: 20
+      - name: sort
+        in: query
+        description: "Sorting criteria in the format: property,(asc|desc). Default\
+          \ sort order is ascending. Multiple sort criteria are supported."
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/hal+json:
+              schema:
+                $ref: '#/components/schemas/PagedModelEntityModelJobDto'
+components:
+  schemas:
+    JobSubmissionInputDto:
+      type: object
+      properties:
+        submissionId:
+          type: string
+        maxRows:
+          type: integer
+          format: int64
+    EntityModelJobExecutionDto:
+      type: object
+      properties:
+        executionId:
+          type: integer
+          format: int64
+        jobId:
+          type: integer
+          format: int64
+        jobName:
+          type: string
+        status:
+          type: string
+          enum:
+          - COMPLETED
+          - STARTING
+          - STARTED
+          - STOPPING
+          - STOPPED
+          - FAILED
+          - ABANDONED
+          - UNKNOWN
+        jobParameters:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/JobParameter'
+        createTime:
+          type: string
+          format: date-time
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        lastUpdateTime:
+          type: string
+          format: date-time
+        exitStatus:
+          $ref: '#/components/schemas/ExitStatus'
+        failureExceptions:
+          type: array
+          items:
+            type: object
+            properties:
+              cause:
+                type: object
+                properties:
+                  stackTrace:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        classLoaderName:
+                          type: string
+                        moduleName:
+                          type: string
+                        moduleVersion:
+                          type: string
+                        methodName:
+                          type: string
+                        fileName:
+                          type: string
+                        lineNumber:
+                          type: integer
+                          format: int32
+                        nativeMethod:
+                          type: boolean
+                        className:
+                          type: string
+                  message:
+                    type: string
+                  localizedMessage:
+                    type: string
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    nativeMethod:
+                      type: boolean
+                    className:
+                      type: string
+              message:
+                type: string
+              localizedMessage:
+                type: string
+        _links:
+          $ref: '#/components/schemas/Links'
+    ExitStatus:
+      type: object
+      properties:
+        exitCode:
+          type: string
+        exitDescription:
+          type: string
+        running:
+          type: boolean
+    JobExecutionDto:
+      type: object
+      properties:
+        executionId:
+          type: integer
+          format: int64
+        jobId:
+          type: integer
+          format: int64
+        jobName:
+          type: string
+        status:
+          type: string
+          enum:
+          - COMPLETED
+          - STARTING
+          - STARTED
+          - STOPPING
+          - STOPPED
+          - FAILED
+          - ABANDONED
+          - UNKNOWN
+        jobParameters:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/JobParameter'
+        createTime:
+          type: string
+          format: date-time
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        lastUpdateTime:
+          type: string
+          format: date-time
+        exitStatus:
+          $ref: '#/components/schemas/ExitStatus'
+        failureExceptions:
+          type: array
+          items:
+            type: object
+            properties:
+              cause:
+                type: object
+                properties:
+                  stackTrace:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        classLoaderName:
+                          type: string
+                        moduleName:
+                          type: string
+                        moduleVersion:
+                          type: string
+                        methodName:
+                          type: string
+                        fileName:
+                          type: string
+                        lineNumber:
+                          type: integer
+                          format: int32
+                        nativeMethod:
+                          type: boolean
+                        className:
+                          type: string
+                  message:
+                    type: string
+                  localizedMessage:
+                    type: string
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    nativeMethod:
+                      type: boolean
+                    className:
+                      type: string
+              message:
+                type: string
+              localizedMessage:
+                type: string
+    JobParameter:
+      type: object
+      properties:
+        identifying:
+          type: boolean
+        value:
+          type: object
+        type:
+          type: string
+          enum:
+          - STRING
+          - DATE
+          - LONG
+          - DOUBLE
+    Links:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/Link'
+    JobFileInputDto:
+      type: object
+      properties:
+        file:
+          type: string
+        maxRows:
+          type: integer
+          format: int64
+    SmilesDto:
+      type: object
+      properties:
+        inputSmiles:
+          type: array
+          items:
+            type: string
+        outputSmiles:
+          type: array
+          items:
+            type: string
+        smilesFlavor:
+          type: integer
+          format: int32
+    EntityModelSmilesDto:
+      type: object
+      properties:
+        inputSmiles:
+          type: array
+          items:
+            type: string
+        outputSmiles:
+          type: array
+          items:
+            type: string
+        smilesFlavor:
+          type: integer
+          format: int32
+        _links:
+          $ref: '#/components/schemas/Links'
+    EntityModelBatchStatus:
+      type: object
+      properties:
+        content:
+          type: string
+          enum:
+          - COMPLETED
+          - STARTING
+          - STARTED
+          - STOPPING
+          - STOPPED
+          - FAILED
+          - ABANDONED
+          - UNKNOWN
+        _links:
+          $ref: '#/components/schemas/Links'
+    CollectionModelEntityModelString:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            strings:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityModelString'
+        _links:
+          $ref: '#/components/schemas/Links'
+    EntityModelString:
+      type: object
+      properties:
+        content:
+          type: string
+        _links:
+          $ref: '#/components/schemas/Links'
+    CollectionModelEntityModelJobExecutionDto:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            jobExecutionDtoes:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityModelJobExecutionDto'
+        _links:
+          $ref: '#/components/schemas/Links'
+    EntityModelJobDto:
+      type: object
+      properties:
+        name:
+          type: string
+        jobInstances:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobInstanceDto'
+        _links:
+          $ref: '#/components/schemas/Links'
+    JobInstanceDto:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: integer
+          format: int64
+        instanceId:
+          type: integer
+          format: int64
+        version:
+          type: integer
+          format: int32
+        jobExecutions:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobExecutionDto'
+    PageMetadata:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int64
+    PagedModelEntityModelJobDto:
+      type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            jobDtoes:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityModelJobDto'
+        _links:
+          $ref: '#/components/schemas/Links'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+        deprecation:
+          type: string
+        profile:
+          type: string
+        name:
+          type: string
+        templated:
+          type: boolean
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    OpenID:
+      type: openIdConnect
+      openIdConnectUrl: http://localhost:28080/auth/realms/lifs/.well-known/openid-configuration
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: http://localhost:28080/auth/realms/lifs/protocol/openid-connect/auth
+          tokenUrl: http://localhost:28080/auth/realms/lifs/protocol/openid-connect/token
+          scopes: {}

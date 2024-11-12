@@ -1,0 +1,6 @@
+<a *ngIf="cvParam" href="{{'https://www.ebi.ac.uk/ols4/search?q=' +cvParam?.accession }}"
+ title="{{ cvParam?.accession }}" target="_blank">
+ {{ cvParam?.name }}{{ cvParam?.value ? ": " : "" }}{{ cvParam?.value }}</a>
+ <a *ngIf="param" href="{{'https://www.ebi.ac.uk/ols4/search?q=' +param?.cv_accession }}"
+ title="{{ param?.cv_accession }}" target="_blank">
+ {{ param?.name }}{{ param?.value ? ": " : "" }}{{ param?.value }}</a>

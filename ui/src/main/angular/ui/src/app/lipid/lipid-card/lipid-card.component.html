@@ -1,0 +1,198 @@
+<p-card *ngIf="!lipid" header="Loading data...">
+  <div class="p-card-content">
+    <div class="grid">
+      <div class="col-12">
+        <p-progressSpinner></p-progressSpinner>
+      </div>
+    </div>
+  </div>
+</p-card>
+<p-card *ngIf="lipid" class="">
+  <ng-template pTemplate="title">
+    <div class="p-card-title">{{ lipid.normalizedShorthandName }}</div>
+  </ng-template>
+  <ng-template pTemplate="subtitle">
+    <div class="p-card-subtitle">{{ lipid.id }}</div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <div *ngIf="lipidSvg" class="grid nogutter" style="padding: 1.5rem">
+      <div class="col-12 md-12">
+        <!-- <div *ngIf="lipid.mdlModel" class="grid">
+                    <div class="col-12 p-md-12">
+                    </div>
+                </div> -->
+        <div #lipidSvgDiv class="nogutter svg" [innerHTML]="lipidSvg"></div>
+      </div>
+    </div>
+  </ng-template>
+  <!-- <div class="p-card-content"> -->
+  <div class="grid">
+    <div class="col-12 p-2 m-2">
+      <div class="grid">
+        <div class="col-3">
+          <span>{{ "id" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          {{ lipid.id }}
+        </div>
+      </div>
+      <!-- lipidLevel -->
+      <div class="grid">
+        <div class="col-3">
+          <span>{{ "lipidLevel" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          {{ lipid.lipidLevel | uppercase | translate }}
+        </div>
+      </div>
+
+      <!-- lipidCategory -->
+      <div class="grid">
+        <div class="col-3">
+          <span>{{ "lmcategory" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          {{ "LIPID_CATEGORY." + lipid.lipidCategory | uppercase | translate }}
+        </div>
+      </div>
+      <!-- lipidClass -->
+      <div class="grid">
+        <div class="col-3">
+          <span>{{ "lmmainclass" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          {{ "LIPID_CLASS." + lipid.lipidClass | uppercase | translate }}
+        </div>
+      </div>
+      <!-- normalizedShorthandName -->
+      <div class="grid">
+        <div class="col-3">
+          <span>{{ "normalizedShorthandName" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          {{ lipid.normalizedShorthandName }}
+        </div>
+      </div>
+      <!-- commonName -->
+      <div class="grid">
+        <div class="col-3">
+          <span>{{ "commonName" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          {{ lipid.commonName }}
+        </div>
+      </div>
+      <!-- synonyms -->
+      <div class="grid">
+        <div class="col-3">
+          <span>{{ "synonyms" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          {{ lipid.synonyms }}
+        </div>
+      </div>
+      <!-- mass -->
+      <div class="grid">
+        <div class="col-3">
+          <span>{{ "mass" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          <a href="" title="Find Isobars (with similar mass)">{{ lipid.exactMass }}</a>
+        </div>
+      </div>
+      <!-- chemicalFormula -->
+      <div class="grid">
+        <div class="col-3">
+          <span>{{ "chemicalFormula" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          {{ lipid.chemicalFormula }}
+        </div>
+      </div>
+      <!-- smiles -->
+      <div class="grid">
+        <div class="col-3">
+          <span>{{ "smiles" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          {{ lipid.smiles }}
+        </div>
+      </div>
+      <!-- lmEntry -->
+      <div class="grid" *ngIf="!hideLinks">
+        <div class="col-3">
+          <span>{{ "lmEntry" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          <div *ngIf="lipid.lipidMapsEntry">
+            <p-virtualScroller [value]="lipid.lipidMapsEntry" scrollHeight="50px" [itemSize]="25" [rows]="5">
+              <ng-template pTemplate="item" let-lme>
+                <span *ngIf="lme.nativeUrl"><a href="{{ lme.nativeUrl }}" target="_blank" rel="noopener">{{
+                    lme.abbreviation }} ({{ lme.nativeId }})</a></span>
+                <span *ngIf="!lme.nativeUrl"><a href="{{
+                      'https://www.lipidmaps.org/data/LMSDRecord.php?LMID=' +
+                        lme.nativeId.toString()
+                    }}" target="_blank" rel="noopener">{{ lme.abbreviation }}&nbsp;<span
+                      class="fas fa-chevron-right"></span>&nbsp;{{ lme.level | uppercase | translate }}</a></span>
+              </ng-template>
+            </p-virtualScroller>
+            <!-- <div *ngFor="let lme of lipid.lipidMapsEntry">
+                              <span *ngIf="lme.nativeUrl"><a href="{{lme.nativeUrl}}" target="_blank" rel="noopener">{{ lme.abbreviation }} ({{ lme.nativeId }})</a></span>
+                              <span *ngIf="!lme.nativeUrl"><a href="{{'https://www.lipidmaps.org/data/LMSDRecord.php?LMID=' + lme.nativeId.toString()}}" target="_blank" rel="noopener">{{ lme.abbreviation }}&nbsp;<span class="fas fa-chevron-right"></span>&nbsp;{{ lme.level | uppercase | translate }}</a></span>
+                          </div> -->
+          </div>
+        </div>
+      </div>
+      <!-- slEntry -->
+      <div class="grid" *ngIf="!hideLinks">
+        <div class="col-3">
+          <span>{{ "slEntry" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          <div *ngIf="lipid.swissLipidsEntry">
+            <p-virtualScroller [value]="lipid.swissLipidsEntry" scrollHeight="50px" [itemSize]="25" [rows]="5">
+              <ng-template pTemplate="item" let-sle>
+                <span *ngIf="sle.nativeUrl"><a href="{{ sle.nativeUrl }}" target="_blank" rel="noopener">{{
+                    sle.abbreviation }} ({{ sle.nativeId }})</a></span>
+                <span *ngIf="!sle.nativeUrl"><a href="{{
+                      'https://www.swisslipids.org/#/entity/' +
+                        sle.nativeId.toString()
+                    }}" target="_blank" rel="noopener">{{ sle.abbreviation }}&nbsp;<span
+                      class="fas fa-chevron-right"></span>&nbsp;{{ sle.level | uppercase | translate }}</a></span>
+              </ng-template>
+            </p-virtualScroller>
+          </div>
+        </div>
+      </div>
+
+      <!-- mzTabResultPage with links -->
+      <div class="grid" *ngIf="mzTabResults?._embedded?.mzTabResultsForLipids?.length > 0 && !hideLinks">
+        <div class="col-3">
+          <span>{{ "idInEntry" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          <div *ngFor="let idEntry of mzTabResults?._embedded?.mzTabResultsForLipids">
+            <span><a [routerLink]="['/dataset/pid/' + idEntry.nativeId]">{{ idEntry.nativeId
+                }}</a></span>
+          </div>
+        </div>
+      </div>
+      <!-- mzTabResultPage without links -->
+      <div class="grid" *ngIf="mzTabResults && hideLinks">
+        <div class="col-3">
+          <span>{{ "idInEntry" | uppercase | translate }}</span>
+        </div>
+        <div class="col-9">
+          <span>{{ mzTabResults?._embedded?.mzTabResultsForLipids?.length }}&nbsp; datasets</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <ng-template pTemplate="footer">
+      <p-button *ngIf="lipid['_links']['self'] && hideLinks" [routerLink]="['/lipid', lipid.id]"
+        routerLinkActive="router-link-active">
+        <span class="far fa-eye" aria-hidden="true"></span>&nbsp;View Lipid
+      </p-button>
+    </ng-template>
+</p-card>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-run-dev</actionName>
+            <displayName>run-dev</displayName>
+            <goals>
+                <goal>spring-boot:run</goal>
+            </goals>
+            <properties>
+                <Env.EUREKA_URI>http://127.0.0.1:28092/eureka</Env.EUREKA_URI>
+                <Env.CONFIG_URI>http://127.0.0.1:28095/lcconfig</Env.CONFIG_URI>
+            </properties>
+            <activatedProfiles>
+                <activatedProfile>lh-dev</activatedProfile>
+            </activatedProfiles>
+        </action>
+        <action>
+            <actionName>CUSTOM-dev-debug</actionName>
+            <displayName>dev-debug</displayName>
+            <goals>
+                <goal>spring-boot:run</goal>
+            </goals>
+            <properties>
+                <Env.EUREKA_URI>http://localhost:28092/eureka</Env.EUREKA_URI>
+                <jpda.listen>maven</jpda.listen>
+            </properties>
+            <activatedProfiles>
+                <activatedProfile>lh-dev</activatedProfile>
+            </activatedProfiles>
+        </action>
+        <action>
+            <actionName>CUSTOM-Test with output</actionName>
+            <displayName>Test with output</displayName>
+            <goals>
+                <goal>test</goal>
+            </goals>
+            <properties>
+                <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
+            </properties>
+        </action>
+        <action>
+            <actionName>run</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.executable>java</exec.executable>
+                <exec.workingdir>/home/nilshoffmann/Projects/github.com/lifs-tools/lipidcompass-external-data/LipidMaps/LMSDFDownload28Oct21</exec.workingdir>
+                <exec.vmArgs></exec.vmArgs>
+                <exec.appArgs>LMSD_20212810.sdf</exec.appArgs>
+                <exec.mainClass>org.lipidcompass.batch.SdfToTable</exec.mainClass>
+            </properties>
+        </action>
+        <action>
+            <actionName>debug</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.executable>java</exec.executable>
+                <jpda.listen>true</jpda.listen>
+                <exec.workingdir>/home/nilshoffmann/Projects/github.com/lifs-tools/lipidcompass-external-data/LipidMaps/LMSDFDownload28Oct21</exec.workingdir>
+                <exec.vmArgs>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
+                <exec.appArgs>LMSD_20212810.sdf</exec.appArgs>
+                <exec.mainClass>org.lipidcompass.batch.SdfToTable</exec.mainClass>
+            </properties>
+        </action>
+        <action>
+            <actionName>profile</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.executable>java</exec.executable>
+                <exec.workingdir>/home/nilshoffmann/Projects/github.com/lifs-tools/lipidcompass-external-data/LipidMaps/LMSDFDownload28Oct21</exec.workingdir>
+                <exec.vmArgs></exec.vmArgs>
+                <exec.appArgs>LMSD_20212810.sdf</exec.appArgs>
+                <exec.mainClass>org.lipidcompass.batch.SdfToTable</exec.mainClass>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-Generate OpenApi Frontend Services</actionName>
+            <displayName>Generate OpenApi Frontend Services</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>generate-openapi-frontend-services</activatedProfile>
+            </activatedProfiles>
+        </action>
+    </actions>

@@ -1,0 +1,45 @@
+= Lipid Compass Backend
+
+== Design and System Architecture
+
+The Lipid Compass (Graph) Backend is designed to work as a m(i/a)croservice, providing an access point to the graph database ArangoDB[https://arangodb.com]. This database is used to store lipids, their relations, ontological mappings, and to link experimental data with quantities and evidence, as well as with external resources.
+
+The backend is accessible via Spring Data repositories. Create, Update, Delete (CRUD) Operations on these repositories are provided via HATEOAS REST controllers. Those provide discoverable and navigable descriptions of available resources and operations via responses that are `application/hal+json`-encoded.
+
+The backend runs as a `resource server` which means, that it validates incoming JSON Web-Tokens (JWT) against an Oauth2 / OpenId-Connect server, when a webtoken is supplied. That Oauth server provides these JWTs after successful authentication to a client. The client then has to provide the token via HTTP Bearer authentication (Http request header: Authorization, Value: `Bearer ey....`), where `ey...` is the Base64 encoded JWT. The JWT contains the client-specific authorizations which are then decoded by a custom role mapper implementation, to allow LIFS to use one authorization realm with custom roles per user for each of our web applications. Thus, a particular user could have the `USER` role in LipidCompass, but could have the `ADMIN` role in LipidXplorer. 
+
+Certain operations are restricted to user with a valid authentication and a certain user role (e.g. create and delete operations). Some operations are restricted to the owner of a particular object. Also, visibility flags on some objects allow restricting access to certain data to specific users and / or roles.
+
+=== Bootstrapping
+
+The bootstrap process in the backend is organized in phases.
+
+. Retrieval of configuration from the `lipidcompass-configuration` service.
+
+. Bootstrapping of application context from the configuration.
+
+. Registration of the service with the Eureka registry `lipidcompass-registry` to allow service discovery and load-balancing using the service name, independent of any available orchestrator or microservice fabric. We currently use Swarm to start and scale the services, but Kubernetes or bare bones, manual multihost operation would also be possible to realize.
+
+. Initialization of system users (user and admin) in the `users` collection by the `AuthorityAndUserBootstrap` class. The names of these users are defined by the spring properties prefixed with `lipidcompass`, as defined in the `LipidCompassProperties` class.
+. 
+
+NOTE: The backend application requires that at least one ArangoDB database server is available and accepts connections with the credentials configured with the `arangodb.` prefix.
+
+== Authentication and Authorization
+
+
+
+==== ArangoDB Configuration Properties
+
+The following properties are the defaults from `application.properties`.
+They can be overriden in a profile-specific properties file, e.g. for the `dev` environment within the `application-dev.properties` file. Lipid Compass uses the Spring Boot endorsed best-practices to separate environment-specific configuration into separate files. Please note that we use Spring Cloud configuration[https://cloud.spring.io/spring-cloud-config/reference/html/] to retrieve the application properties from a version controlled configuration server, so that the properties files are not contained within the same Git repository as the application source code.
+
+----
+arangodb.host=${ARANGODB_HOST:localhost}
+arangodb.port=${ARANGODB_PORT:28091}
+arangodb.timeout=${ARANGODB_TIMEOUT:5000}
+arangodb.user=${ARANGODB_USER:root}
+arangodb.password=${ARANGODB_PASSWORD:}
+arangodb.useSsl=${ARANGODB_USE_SSL:false}
+arangodb.database=${ARANGODB_DATABASE:lipidcompass}
+----

@@ -1,0 +1,24 @@
+@keyframes loader {
+    to {transform: rotate(360deg);}
+  }
+.loader:before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    top: 2%;
+    right: 5%;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    margin-left: -10px;
+    border-radius: 50%;
+    border: 4px solid #ccc;
+    border-top-color: #333;
+    animation: loader .6s linear infinite;
+  }
+.disabled {
+    z-index: 1000;
+    background-color: lightgrey;
+    opacity: 0.6;
+    pointer-events: none;
+}

@@ -1,0 +1,62 @@
+<p-card>
+    <ng-template pTemplate="header"> </ng-template>
+    <div class="p-card-content py-0">
+        <div class="flex justify-content-start flex-row flex-wrap">
+            <!-- logo -->
+            <div class="flex-auto flex-grow-0 flex flex-column">
+                <div class="layered-image" style="width: 200px; height: 200px">
+                    <img
+                        class="image-base"
+                        width="200"
+                        height="200"
+                        src="assets/img/lipidcompass-base.png"
+                        alt="LipidCompass Logo"
+                    />
+                    <img
+                        class="image-overlay"
+                        (click)="rotate()"
+                        [@rotatedState]="state"
+                        width="200"
+                        height="200"
+                        src="assets/img/lipidcompass-rose.png"
+                        alt="Lipid Compass Logo"
+                    />
+                </div>
+            </div>
+            <!-- title -->
+            <div class="flex flex-grow-0 px-6 max-w-20rem flex-column">
+                <div class="grid">
+                    <div *ngIf="this.loadingStats && !this.dbStats" class="md:col-12 lg:col-12 xl:col-12 sm:col-12">
+                        <p-progressSpinner ariaLabel="loading"></p-progressSpinner>
+                    </div>
+                    <div *ngIf="!this.loadingStats" class="md:col-12 lg:col-12 xl:col-12 sm:col-12">
+                        <div class="p-card-title">LipidCompass</div>
+                        <div class="p-card-subtitle" *ngIf="this.dbStats">
+                            {{ this.dbStats.releaseVersion }}&nbsp;<span>{{
+                                this.dbStats.releaseDate | date: "mediumDate":"en-US"
+                            }}</span>
+                        </div>
+                        <div class="p-card-content">
+                            <p *ngIf="this.dbStats">
+                                A database to help you navigate and explore the lipid
+                                structural space of
+                                {{
+                                    this.dbStats.lipidQuantities
+                                        | number: "1.0-0":"en-US"
+                                }}
+                                lipid quantities within and across studies.
+                            </p>
+                            <p *ngIf="!this.dbStats">
+                                No data available.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-auto flex-grow-1">
+                <!--class="flex-auto flex-wrap flex-grow-1 flex"-->
+                <app-stats-card-grid *ngIf="!this.loadingStats" [cards]="dbStatsCards"></app-stats-card-grid>
+            </div>
+        </div>
+    </div>
+</p-card>

@@ -1,0 +1,311 @@
+<p-card *ngIf="!datasets" header="Loading data...">
+    <div class="p-card-content">
+        <div class="grid">
+            <div class="col-12">
+                <p-progressSpinner></p-progressSpinner>
+            </div>
+        </div>
+    </div>
+</p-card>
+<p-card *ngIf="datasets" header="Comparison of {{ datasets.length }} datasets">
+    <div class="p-card-content">
+        <div class="grid">
+            <div class="col-3">
+                <p-accordion [activeIndex]="0" [multiple]="true">
+                    <p-accordionTab header="Datasets">
+                        <p-dataView [value]="datasets" layout="list">
+                            <ng-template let-datasets pTemplate="list">
+                                <div class="col-12" *ngFor="let dataset of datasets; let first = first">
+                                    <div class="grid" [ngClass]="{ 'border-top-1 surface-border': !first }">
+                                        <div class="col-12">
+                                            <span class="p-card-subtitle">{{
+                                                dataset.mzTabSummary.id
+                                                }}</span>
+                                        </div>
+                                        <div class="col-12">
+                                            <a [routerLink]="[
+                                                            '/dataset/' + dataset.id
+                                                        ]"><b>{{
+                                                    dataset.mzTabSummary.title
+                                                    }}</b></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <!-- <ng-template let-dataset pTemplate="gridItem">
+                                <div class="p-2 m-2">
+                                    <div class="grid">
+                                        <div class="col-12">
+                                            <span class="p-card-subtitle">{{
+                                                dataset.mzTabSummary.id
+                                            }}</span>
+                                        </div>
+                                        <div class="col-12">
+                                            <a
+                                                [routerLink]="[
+                                                    '/dataset/' + dataset.id
+                                                ]"
+                                                ><strong>{{
+                                                    dataset.mzTabSummary.title
+                                                }}</strong></a
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template> -->
+                        </p-dataView>
+                    </p-accordionTab>
+                    <p-accordionTab header="Filters"> 
+                        <app-dataset-filters></app-dataset-filters>
+                    </p-accordionTab>
+
+                    <p-accordionTab header="Corrections">
+                        <app-dataset-corrections></app-dataset-corrections>
+                    </p-accordionTab>
+
+                    <!-- <p-accordionTab header="Comparisons">
+
+                    </p-accordionTab> -->
+                </p-accordion>
+            </div>
+            <div class="col-9">
+                <p-tabView [scrollable]="true">
+                    <p-tabPanel header="Class Level - Total Lipid Concentrations">
+                        <div class="grid">
+                            <div class="col-12">
+                                <plotly-plot [data]="chartData" [layout]="lipidClassRangesPlotLayout"
+                                    [useResizeHandler]="true" [config]="homePlotlyConfig" [style]="{
+                                        position: 'relative',
+                                        width: '100%',
+                                        height: '100%'
+                                    }"></plotly-plot>
+                            </div>
+                        </div>
+                    </p-tabPanel>
+                    <p-tabPanel header="Hierarchy - Sunburst Concentrations">
+                        <div class="p-d-flex p-flex-wrap" *ngIf="sunburstData">
+                            <plotly-plot *ngFor="let sunburstDataItem of sunburstData" [data]="sunburstDataItem"
+                                [layout]="sunburstLayout" [useResizeHandler]="true" [config]="homePlotlyConfig" [style]="{
+                                    position: 'relative',
+                                    width: '100%',
+                                    height: '100%'
+                                }" class="p-mb-2 p-mr-2 p-jc-center p-jc-center"></plotly-plot>
+                        </div>
+                    </p-tabPanel>
+                    <p-tabPanel header="Species Level - Concentration Correlation">
+                        <div class="grid">
+                            <div class="col-12">
+                                <plotly-plot [data]="speciesCorrelationChartData"
+                                    [layout]="lipidSpeciesCorrelationPlotLayout" [useResizeHandler]="false"
+                                    [config]="homePlotlyConfig" [style]="{
+                                        position: 'relative',
+                                        width: '100%',
+                                        height: '100%'
+                                    }"></plotly-plot>
+                            </div>
+                        </div>
+                    </p-tabPanel>
+                    <p-tabPanel header="Category Level - Lipid Counts">
+                        <div class="grid">
+                            <div class="col-12">
+                                <app-dataset-plot-donut [datasetIds]="datasetIds" [lipidLevel]="categoryLipidLevel"
+                                    [plotLayout]="lipidCategoryCompositionPlotLayout" [counts]="true">
+                                </app-dataset-plot-donut>
+                            </div>
+                        </div>
+                    </p-tabPanel>
+                    <p-tabPanel header="Category Level - Lipid Concentrations">
+                        <div class="grid">
+                            <div class="col-12">
+                                <app-dataset-plot-donut [datasetIds]="datasetIds" [lipidLevel]="categoryLipidLevel"
+                                    [plotLayout]="lipidCategoryConcentrationPlotLayout" [counts]="false">
+                                </app-dataset-plot-donut>
+                            </div>
+                        </div>
+                    </p-tabPanel>
+                    <p-tabPanel header="Dataset Total Quantity Distribution">
+                        <div class="grid">
+                            <div class="col-12">
+                                <plotly-plot [data]="totalQuantBoxPlotData" [layout]="totalQuantBoxPlotLayout"
+                                    [useResizeHandler]="true" [config]="homePlotlyConfig" [style]="{
+                                        position: 'relative',
+                                        width: '100%',
+                                        height: '100%'
+                                    }">
+                                </plotly-plot>
+                            </div>
+                            <div class="col-12">
+                                <p-table [value]="totalQuantBoxPlotTableData" styleClass="p-datatable-sm"
+                                    responsiveLayout="scroll" sortMode="multiple">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th pSortableColumn="name">
+                                                Dataset
+                                                <p-sortIcon field="name"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="x">
+                                                Lipid
+                                                <p-sortIcon field="x"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="y">
+                                                Total Quantity
+                                                <p-sortIcon field="y"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="unit">
+                                                Unit
+                                                <p-sortIcon field="unit"></p-sortIcon>
+                                            </th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-dataset>
+                                        <tr>
+                                            <td>{{ dataset.name }}</td>
+                                            <td>{{ dataset.x }}</td>
+                                            <td>{{ dataset.y }}</td>
+                                            <td>{{ dataset.unit }}</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </p-tabPanel>
+                    <p-tabPanel header="Species Level - Lipid Concentrations">
+                        <div class="grid">
+                            <div class="col-12">
+                                <plotly-plot [data]="boxPlotData" [layout]="boxPlotLayout" [useResizeHandler]="true"
+                                    [config]="homePlotlyConfig" [style]="{
+                                        position: 'relative',
+                                        width: '100%',
+                                        height: '100%'
+                                    }">
+                                </plotly-plot>
+                            </div>
+                            <div class="col-12">
+                                <p-table [value]="boxPlotTableData" styleClass="p-datatable-sm"
+                                    responsiveLayout="scroll" sortMode="multiple">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th pSortableColumn="name">
+                                                Dataset
+                                                <p-sortIcon field="name"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="shorthandNames">
+                                                Lipids
+                                                <p-sortIcon field="shorthandNames"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="q1">
+                                                1st quantile
+                                                <p-sortIcon field="q1"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="median">
+                                                Median Quantity
+                                                <p-sortIcon field="median"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="q3">
+                                                3rd quantile
+                                                <p-sortIcon field="q3"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="q3">
+                                                3rd quantile
+                                                <p-sortIcon field="q3"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="lowerfence">
+                                                Lowerfence
+                                                <p-sortIcon field="lowerfence"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="upperfence">
+                                                Upperfence
+                                                <p-sortIcon field="upperfence"></p-sortIcon>
+                                            </th>
+                                            <th pSortableColumn="unit">
+                                                Unit
+                                                <p-sortIcon field="unit"></p-sortIcon>
+                                            </th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-dataset>
+                                        <tr>
+                                            <td>{{ dataset.name }}</td>
+                                            <td>{{ dataset.shorthandNames }}</td>
+                                            <td>{{ dataset.q1 }}</td>
+                                            <td>{{ dataset.median }}</td>
+                                            <td>{{ dataset.q3 }}</td>
+                                            <td>{{ dataset.lowerfence }}</td>
+                                            <td>{{ dataset.upperfence }}</td>
+                                            <td>{{ dataset.unit }}</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </p-tabPanel>
+                    <p-tabPanel header="LipidSpace">
+                        <div class="grid">
+                            <div class="col-12">
+                                <plotly-plot [data]="lipidSpacePlotData" [layout]="lipidSpacePlotLayout"
+                                    [useResizeHandler]="true" [config]="homePlotlyConfig" [style]="{
+                                        position: 'relative',
+                                        width: '100%',
+                                        height: '100%'
+                                    }">
+                                </plotly-plot>
+                            </div>
+                            <div class="col-12">
+                                <plotly-plot [data]="lipidSpaceMatrixPlotData" [layout]="lipidSpaceMatrixPlotLayout"
+                                    [useResizeHandler]="true" [config]="homePlotlyConfig" [style]="{
+                                        position: 'relative',
+                                        width: '100%',
+                                        height: '100%'
+                                    }">
+                                </plotly-plot>
+                            </div>
+                        </div>
+                    </p-tabPanel>
+                    <!-- <p-tabPanel header="Species Level - Commons">
+            <div class="grid">
+              <div class="col-12">
+                <plotly-plot
+                  [data]="boxPlotData"
+                  [layout]="boxPlotLayout"
+                  [useResizeHandler]="true"
+                  [config]="homePlotlyConfig"
+                  [style]="{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%'
+                  }"
+                >
+                </plotly-plot>
+              </div>
+            </div>
+          </p-tabPanel> -->
+                </p-tabView>
+            </div>
+        </div>
+    </div>
+    <!-- 
+  <p-multiSelect
+    [options]="datasets"
+    [(ngModel)]="selectedDatasets"
+  >
+    <ng-template let-value pTemplate="selectedItems">
+      <div
+        class="dataset-item dataset-item-value"
+        *ngFor="let option of selectedDatasets"
+      >
+        <div>{{ option.mzTabSummary.title }}</div>
+      </div>
+      <div
+        *ngIf="!selectedDatasets || selectedDatasets.length === 0"
+        class="dataset-placeholder"
+      >
+        Select Datasets
+      </div>
+    </ng-template>
+    <ng-template let-dataset pTemplate="item">
+      <div class="dataset-item">
+        <div>{{ dataset.title }}</div>
+      </div>
+    </ng-template>
+  </p-multiSelect> -->
+</p-card>

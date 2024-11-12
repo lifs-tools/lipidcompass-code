@@ -1,0 +1,81 @@
+<div class="p-col-11 p-p-2 m-p-2">
+  <div class="p-grid">
+    <div class="p-col-3">
+      <span class="fas fa-barcode fa-fw" aria-hidden="true"></span
+      >&nbsp;Id
+    </div>
+    <div class="p-col-9">
+      <!-- <a [routerLink]="['/submission/' + submission.id]"><b>{{ submission.id }}</b></a> -->
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col-3">
+      <span
+        class="fas fa-user fa-fw"
+        aria-hidden="true"
+      ></span
+      >&nbsp;Created By
+    </div>
+    <div class="p-col-9">
+      {{submission?.submitter?.firstName}}&nbsp;{{submission?.submitter?.familyName}}&nbsp;({{submission?.submitter?.emailAddress}})
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col-3">
+      <span
+        class="far fa-clock fa-fw"
+        aria-hidden="true"
+      ></span
+      >&nbsp;Created On
+    </div>
+    <div class="p-col-9">
+      {{submission?.dateCreated}}
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col-3">
+      <span
+        class="far fa-clock fa-fw"
+        aria-hidden="true"
+      ></span
+      >&nbsp;Updated On
+    </div>
+    <div class="p-col-9">
+      {{submission?.dateLastModified}}
+    </div>
+  </div>
+  <div class="p-grid">
+    <div class="p-col-3">
+      <span class="fas fa-link fa-fw" aria-hidden="true"></span
+      >&nbsp;Private Link (for reviewers)
+    </div>
+    <div class="p-col-9">
+      <!-- <a [routerLink]="['/review/' + submission.privateLinkUuid]"
+        ><b>{{ submission.privateLinkUuid }}</b></a
+      > -->
+    </div>
+  </div>
+</div>
+<div class="p-col-1 p-p-2 m-p-2">
+  <span
+    title="Visibility"
+    *ngIf="submission.visibility === 'PRIVATE'"
+    class="fa fa-lock p-tag p-tag-danger"
+    aria-hidden="true"
+  ></span>
+  <span
+    title="Visibility"
+    *ngIf="submission.visibility === 'RESTRICTED'"
+    class="fa fa-lock p-tag p-tag-warning"
+    aria-hidden="true"
+  ></span>
+  <span
+    title="Visibility"
+    *ngIf="submission.visibility === 'PUBLIC'"
+    class="fa fa-lock-open p-tag p-tag-success"
+    aria-hidden="true"
+  ></span>
+  <span title="Submission Status" class="p-tag p-tag-info">{{
+    submission.status
+  }}</span>
+</div>

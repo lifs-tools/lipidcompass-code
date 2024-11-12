@@ -1,0 +1,41 @@
+/* @keyframes loader {
+    to {transform: rotate(360deg);}
+  } */
+.loader:before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    border-radius: 50%;
+    border: 4px solid #ccc;
+    border-top-color: #333;
+    animation: loader .6s linear infinite;
+  }
+.disabled {
+    z-index: 1000;
+    background-color: lightgrey;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+::ng-deep .p-listbox {
+  border: none;
+}
+
+::ng-deep .p-autocomplete {
+  width: 100%;
+}
+
+::ng-deep .p-autocomplete-multiple-container {
+  padding-left: 1rem;
+}
+
+.sum-formula {
+  font-variant-numeric: oldstyle-nums;
+}
+
+::ng-deep .p-panel-header{
+  display: block;
+}

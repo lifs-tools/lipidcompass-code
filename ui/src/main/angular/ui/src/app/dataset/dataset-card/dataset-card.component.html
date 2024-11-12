@@ -1,0 +1,459 @@
+<p-card *ngIf="!mzTabResult" header="Loading data...">
+  <div class="p-card-content">
+    <div class="grid">
+      <div class="col-12">
+        <p-progressSpinner></p-progressSpinner>
+      </div>
+    </div>
+  </div>
+</p-card>
+<div *ngIf="mzTabResult && !detailView">
+  <div class="col-12" *ngIf="!detailView">
+    <div class="grid">
+      <div class="col-3">
+        <span class="fa fa-flask fa-fw" aria-hidden="true"></span>&nbsp;Title
+      </div>
+      <div class="col-9">
+        <a [routerLink]="['/dataset/pid/' + mzTabResult?.nativeId]"
+          ><strong>{{ mzTabResult?.mzTabSummary?.title }}</strong></a
+        >
+      </div>
+    </div>
+    <div class="grid">
+      <div class="col-3">
+        <span class="fas fa-eye fa-fw" aria-hidden="true"></span>&nbsp;Status
+      </div>
+      <div class="col-9">
+        <span
+          title="{{ 'Visibility: ' + mzTabResult?.visibility }}"
+          *ngIf="mzTabResult?.visibility === 'PRIVATE'"
+          class="fa fa-lock p-tag p-tag-danger p-1 m-1"
+          aria-hidden="true"
+        ></span>
+        <span
+          title="{{ 'Visibility: ' + mzTabResult?.visibility }}"
+          *ngIf="mzTabResult?.visibility === 'RESTRICTED'"
+          class="fa fa-lock p-tag p-tag-warning p-1 m-1"
+          aria-hidden="true"
+        ></span>
+        <span
+          title="{{ 'Visibility: ' + mzTabResult?.visibility }}"
+          *ngIf="mzTabResult?.visibility === 'PUBLIC'"
+          class="fa fa-lock-open p-tag p-tag-success p-1 m-1"
+          aria-hidden="true"
+        ></span>
+        <span
+          title="{{ 'Publication Status: ' + mzTabResult?.submissionStatus }}"
+          class="p-tag p-tag-info p-1 m-1"
+          >{{ mzTabResult?.submissionStatus }}</span
+        >
+      </div>
+    </div>
+    <div class="grid">
+      <div class="col-3">
+        <span class="fas fa-star fa-fw" aria-hidden="true"></span>&nbsp;Rating
+      </div>
+      <div class="col-9">
+        <p-rating *ngIf="rating" [(ngModel)]="rating.value" [readonly]="true" [cancel]="false" [stars]="rating.ncases" class="py-1 mr-1 my-1"/> <span class="p-1 m-1" *ngIf="rating">{{ "RATING." + rating?.label | uppercase | translate }}</span>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="col-3">
+        <span class="fas fa-gauge fa-fw" aria-hidden="true"></span>&nbsp;Level
+      </div>
+      <div class="col-9">
+         {{ "COMPLETENESS." + mzTabResult?.completeness | uppercase | translate }}
+      </div>
+    </div>
+    <div class="grid" *ngIf="showClassifications" >
+      <div class="col-3">
+        <span class="fas fa-tags fa-fw" aria-hidden="true"></span
+        >&nbsp;Classifications
+      </div>
+      <div class="col-9 flex flex-wrap">
+        <span
+          class="p-tag classification"
+          *ngFor="let cvParam of mzTabResult?.cvParameters"
+          >
+          <app-olslink [cvParam]="cvParam"></app-olslink>
+          </span
+        >
+      </div>
+    </div>
+    <div class="grid">
+      <div class="col-3">
+        <span class="fas fa-weight fa-fw" aria-hidden="true"></span
+        >&nbsp;Quantification Unit
+      </div>
+      <div class="col-9">
+        <span class="p-tag p-tag-success p-1 m-1 classification"
+          >
+          <app-olslink [param]="mzTabResult?.mzTabSummary?.quantificationUnit"></app-olslink>
+          </span
+        >
+      </div>
+    </div>
+  </div>
+</div>
+<p-card *ngIf="mzTabResult && detailView" class="">
+  <ng-template pTemplate="title" *ngIf="detailView">
+    <div class="p-card-title">{{ mzTabResult?.mzTabSummary?.title }}</div>
+  </ng-template>
+  <ng-template pTemplate="subtitle" *ngIf="detailView">
+    <div class="p-card-subtitle">{{ mzTabResult?.mzTabSummary?.id }}</div>
+  </ng-template>
+  <!-- <div class="p-card-content"> -->
+  <p-panel header="Dataset Details" [toggleable]="true" *ngIf="detailView">
+    <div class="grid">
+      <div class="col-11 p-2 m-2">
+        <div class="grid">
+          <div class="col-3">
+            <span class="fa fa-flask fa-fw" aria-hidden="true"></span
+            >&nbsp;Title
+          </div>
+          <div class="col-9">
+            <a [routerLink]="['/dataset/pid/' + mzTabResult?.nativeId]"
+              ><b>{{ mzTabResult?.mzTabSummary?.title }}</b></a
+            >
+          </div>
+        </div>
+        <!-- </div> -->
+        <div class="grid">
+          <div class="col-3">
+            <span class="fa fa-stream fa-fw" aria-hidden="true"></span
+            >&nbsp;Description
+          </div>
+          <div class="col-9">
+            {{ mzTabResult?.mzTabSummary?.description }}
+          </div>
+        </div>
+        <div class="grid">
+          <div class="col-3">
+            <span class="fas fa-eye fa-fw" aria-hidden="true"></span>&nbsp;Status
+          </div>
+          <div class="col-9">
+            <span
+              title="{{ 'Visibility: ' + mzTabResult?.visibility }}"
+              *ngIf="mzTabResult?.visibility === 'PRIVATE'"
+              class="fa fa-lock p-tag p-tag-danger p-1 m-1"
+              aria-hidden="true"
+            ></span>
+            <span
+              title="{{ 'Visibility: ' + mzTabResult?.visibility }}"
+              *ngIf="mzTabResult?.visibility === 'RESTRICTED'"
+              class="fa fa-lock p-tag p-tag-warning p-1 m-1"
+              aria-hidden="true"
+            ></span>
+            <span
+              title="{{ 'Visibility: ' + mzTabResult?.visibility }}"
+              *ngIf="mzTabResult?.visibility === 'PUBLIC'"
+              class="fa fa-lock-open p-tag p-tag-success p-1 m-1"
+              aria-hidden="true"
+            ></span>
+            <span
+              title="{{ 'Publication Status: ' + mzTabResult?.submissionStatus }}"
+              class="p-tag p-tag-info p-1 m-1"
+              >{{ mzTabResult?.submissionStatus }}</span
+            >
+          </div>
+        </div>
+        <div class="grid">
+          <div class="col-3">
+            <span class="fas fa-star fa-fw" aria-hidden="true"></span>&nbsp;Rating
+          </div>
+          <div class="col-9">
+            <p-rating *ngIf="rating" [(ngModel)]="rating.value" [readonly]="true" [cancel]="false" [stars]="rating.ncases" class="py-1 mr-1 my-1"/> <span class="p-1 m-1" *ngIf="rating">{{ "RATING." + rating?.label | uppercase | translate }}</span>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="col-3">
+            <span class="fas fa-gauge fa-fw" aria-hidden="true"></span>&nbsp;Level
+          </div>
+          <div class="col-9">
+             {{ "COMPLETENESS." + mzTabResult?.completeness | uppercase | translate }}
+          </div>
+        </div>
+        <div class="grid">
+          <div class="col-3">
+            <span class="fa fa-address-book fa-fw" aria-hidden="true"></span
+            >&nbsp;Contacts
+          </div>
+          <div class="col-9">
+            <div *ngFor="let contact of mzTabResult?.mzTabSummary?.contacts">
+              <span>{{ contact.name }}</span
+              >&nbsp;<a href="mailto:{{ contact.email }}" class="external-link"
+                ><span class="fa fa-envelope" aria-hidden="true"></span></a
+              ><br />
+              <span>{{ contact.affiliation }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="col-3">
+            <span class="fa fa-file-alt fa-fw" aria-hidden="true"></span
+            >&nbsp;Publications
+          </div>
+          <div class="col-9">
+            <div
+              *ngFor="let publication of mzTabResult?.mzTabSummary?.publications"
+            >
+              <div *ngFor="let publicationItem of publication.publicationItems">
+                <div *ngIf="publicationItem.type === 'doi'">
+                  <a
+                    href="{{ 'https://doi.org/' + publicationItem.accession }}"
+                    target="_blank"
+                    class="external-link"
+                    ><span>{{
+                      publicationItem.type + ": " + publicationItem.accession
+                    }}</span
+                    >&nbsp;<span
+                      class="fa fa-external-link-alt"
+                      aria-hidden="true"
+                    ></span
+                  ></a>
+                </div>
+                <div *ngIf="publicationItem.type === 'pubmed'">
+                  <span>{{
+                    publicationItem.type + ": " + publicationItem.accession
+                  }}</span
+                  >&nbsp;<a
+                    href="{{
+                      'https://pubmed.ncbi.nlm.nih.gov/' +
+                        publicationItem.accession
+                    }}"
+                    target="_blank"
+                    class="external-link"
+                    ><span
+                      class="fa fa-external-link-alt"
+                      aria-hidden="true"
+                    ></span
+                  ></a>
+                </div>
+                <div *ngIf="publicationItem.type === 'uri'">
+                  <span>{{
+                    publicationItem.type + ": " + publicationItem.accession
+                  }}</span
+                  >&nbsp;<a
+                    href="{{ publicationItem.accession }}"
+                    target="_blank"
+                    class="external-link"
+                    ><span
+                      class="fa fa-external-link-alt"
+                      aria-hidden="true"
+                    ></span
+                  ></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <app-cvparameter-classification [cvParameters]="mzTabResult?.cvParameters" *ngIf="showClassifications"></app-cvparameter-classification>
+        <hr />
+        <div class="grid">
+          <div class="col-3">
+            <span class="fas fa-weight fa-fw" aria-hidden="true"></span
+            >&nbsp;Quantification Unit
+          </div>
+          <div class="col-9">
+            <span class="p-tag p-tag-success p-1 m-1 classification"
+              >
+              <app-olslink [param]="mzTabResult?.mzTabSummary?.quantificationUnit"></app-olslink>
+              </span
+            >
+          </div>
+        </div>
+        <hr />
+        <div class="grid">
+          <div class="col-6">
+            <div class="grid">
+              <div class="col-6">
+                <span
+                  class="fa fa-project-diagram fa-fw"
+                  aria-hidden="true"
+                ></span
+                >&nbsp;Study Variables
+              </div>
+              <div class="col-6">
+                {{
+                  mzTabResult?.mzTabSummary?.studyVariableCount
+                    | number: "1.0-0":"en-US"
+                }}
+              </div>
+            </div>
+            <div class="grid">
+              <div class="col-6">
+                <span class="fa fa-vial fa-fw" aria-hidden="true"></span
+                >&nbsp;Samples
+              </div>
+              <div class="col-6">
+                {{
+                  mzTabResult?.mzTabSummary?.sampleCount | number: "1.0-0":"en-US"
+                }}
+              </div>
+            </div>
+            <div class="grid">
+              <div class="col-6">
+                <span class="fa fa-th fa-fw" aria-hidden="true"></span
+                >&nbsp;Assays
+              </div>
+              <div class="col-6">
+                {{
+                  mzTabResult?.mzTabSummary?.assayCount | number: "1.0-0":"en-US"
+                }}
+              </div>
+            </div>
+            <div class="grid">
+              <div class="col-6">
+                <span class="fa fa-chart-bar fa-fw" aria-hidden="true"></span
+                >&nbsp;MS Runs
+              </div>
+              <div class="col-6">
+                {{
+                  mzTabResult?.mzTabSummary?.msRunCount | number: "1.0-0":"en-US"
+                }}
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="grid">
+              <div class="col-6">
+                <span class="fas fa-th-list fa-fw" aria-hidden="true"></span
+                >&nbsp;Quantities
+              </div>
+              <div class="col-6">
+                {{
+                  mzTabResult?.mzTabSummary?.assayCount *
+                    mzTabResult?.mzTabSummary?.smlCount | number: "1.0-0":"en-US"
+                }}
+              </div>
+            </div>
+            <div class="grid">
+              <div class="col-6">
+                <span class="fa fa-chart-pie fa-fw" aria-hidden="true"></span
+                >&nbsp;Summary Entries
+              </div>
+              <div class="col-6">
+                {{
+                  mzTabResult?.mzTabSummary?.smlCount | number: "1.0-0":"en-US"
+                }}
+              </div>
+            </div>
+            <div class="grid">
+              <div class="col-6">
+                <span class="fa fa-fingerprint fa-fw" aria-hidden="true"></span
+                >&nbsp;MS Features
+              </div>
+              <div class="col-6">
+                {{
+                  mzTabResult?.mzTabSummary?.smfCount | number: "1.0-0":"en-US"
+                }}
+              </div>
+            </div>
+            <div class="grid">
+              <div class="col-6">
+                <span class="fa fa-search fa-fw" aria-hidden="true"></span
+                >&nbsp;MS Evidence
+              </div>
+              <div class="col-6">
+                {{
+                  mzTabResult?.mzTabSummary?.smeCount | number: "1.0-0":"en-US"
+                }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </p-panel>
+
+  <div class="grid" *ngIf="detailView">
+    <div class="col-4">
+      <div class="grid">
+        <div class="col-12">
+          <app-dataset-plot-donut
+              [datasetIds]="[mzTabResult?.id]"
+              [lipidLevel]="categoryLipidLevel"
+              [plotLayout]="lipidCategoryCompositionPlotLayout"
+              [counts]="true"
+          >
+          </app-dataset-plot-donut>
+        </div>
+        <div class="col-12">
+          <app-dataset-plot-donut
+              [datasetIds]="[mzTabResult?.id]"
+              [lipidLevel]="categoryLipidLevel"
+              [plotLayout]="lipidCategoryConcentrationPlotLayout"
+              [counts]="false"
+          >
+          </app-dataset-plot-donut>
+        </div>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="grid">
+        <div class="col-12">
+          <plotly-plot
+            [data]="lipidClassCompositionPlotData"
+            [layout]="lipidClassRangesPlotLayout"
+            [useResizeHandler]="true"
+            [config]="homePlotlyConfig"
+            [style]="{ position: 'relative', width: '100%', height: '100%' }"
+          >
+          </plotly-plot>
+        </div>
+        <div class="col-12">
+          <plotly-plot
+            [data]="lipidSpeciesCompositionPlotData"
+            [layout]="lipidSpeciesRangesPlotLayout"
+            [useResizeHandler]="true"
+            [config]="homePlotlyConfig"
+            [style]="{ position: 'relative', width: '100%', height: '100%' }"
+          >
+          </plotly-plot>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="grid" *ngIf="detailView">
+    <div class="col-12">
+      <p-table [value]="lipidQuantityTable" *ngIf="lipidQuantityTable">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Id</th>
+            <th>Dataset</th>
+            <th>Assay</th>
+            <th>Shorthand Names</th>
+            <th>Category</th>
+            <th>Class</th>
+            <th>Quantity</th>
+            <th>Rel. Quantity</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-quantity>
+          <tr>
+            <td>{{ quantity.id }}</td>
+            <td>{{ quantity.dataset }}</td>
+            <td>{{ quantity.assay }}</td>
+            <td>{{ quantity.normalizedShorthandNames }}</td>
+            <td>{{ quantity.lipidCategory }}</td>
+            <td>{{ quantity.lipidClass }}</td>
+            <td>{{ quantity.assayQuantity }}</td>
+            <td>{{ quantity.assayRelativeQuantity }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div> -->
+  <!-- </div> -->
+  <ng-template pTemplate="footer" *ngIf="!detailView">
+    <p-button
+      *ngIf="mzTabResult?.['_links']?.self"
+      [routerLink]="['/dataset/pid/' + mzTabResult?.nativeId]"
+      routerLinkActive="router-link-active"
+    >
+      <span class="fa fa-angle-down" aria-hidden="true"></span>&nbsp;View
+      mzTabResult
+    </p-button>
+  </ng-template>
+</p-card>

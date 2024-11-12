@@ -1,0 +1,166 @@
+# 
+# Copyright 2018 Leibniz-Institut für Analytische Wissenschaften - ISAS - e.V..
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# 
+# Development profile configuration file for Lipid Compass Backend.
+---
+logging:
+    level:
+        org.springframework: INFO
+        org.springframework.data: INFO
+        org.springframework.data.auditing: INFO
+        org.lipidcompass.service.core.servlet: INFO
+        org.lipidcompass.backend.config: INFO
+        org.lipidcompass.backend.rest.lipid: INFO
+        org.lipidcompass.backend.rest.user: INFO
+        org.lipidcompass.backend.rest.submission: INFO
+        org.springframework.http.server: INFO
+        org.springframework.web.filter.CommonsRequestLoggingFilter: INFO
+
+spring:
+    aop:
+        proxy-target-class: true
+    application:
+        name: lipidcompass-backend
+    cloud:
+        config:
+            enabled: false 
+    data:
+        web:
+            pageable:
+                # Default page size.
+                default-page-size: 20
+                # Maximum page size to be accepted.
+                max-page-size: 200 
+                # Whether to expose and assume 1-based page number indexes.
+                one-indexed-parameters: false
+                # Page index parameter name.
+                page-parameter: page
+                # General prefix to be prepended to the page number and page size parameters.
+                prefix: ""
+                # Delimiter to be used between the qualifier and the actual page number and size properties.
+                qualifier-delimiter: "_"
+                # Page size parameter name.
+                size-parameter: size
+            sort:
+                # Sort parameter name.
+                sort-parameter: sort
+    devtools:
+        add-properties: false
+    mvc:
+        throw-exception-if-no-handler-found: true
+    security:
+        oauth2:
+            # register keycloak as an OAUTH2 authorization server, gateway acts as a client to extract role information
+            client:
+                registration:
+                    keycloak:
+                        client-id: lipidcompass
+                        client-secret: ${docker-secret.lipidcompass_prod_keycloak_client_secret}
+                        authorization-grant-type: authorization_code
+                        redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+                        scope: openid,profile,email
+                provider:
+                    keycloak:
+                        # https://medium.com/@hantsy/secures-your-application-with-spring-security-5-and-keycloak-2804ee912b0f and https://github.com/hantsy/keycloak-springsecurity5-sample
+                        authorization-uri: https://lifs-tools.org/auth/realms/lifs/protocol/openid-connect/auth
+                        token-uri: https://lifs-tools.org/realms/lifs/protocol/openid-connect/token
+                        user-info-uri: https://lifs-tools.org/auth/realms/lifs/protocol/openid-connect/userinfo
+                        jwk-set-uri: https://lifs-tools.org/auth/realms/lifs/protocol/openid-connect/certs
+                        user-name-attribute: preferred_username
+                        user-info-authentication-method: form
+            # gateway acts as an OAUTH2 resourceserver, protecting and proxying to downstream services, jwts are validated
+            resourceserver:
+                jwt:
+                    # settings for oauth2 resourcesserver (https://docs.spring.io/spring-security/site/docs/current/reference/html5/#oauth2resourceserver-jwt-jwkseturi)
+                    issuer-uri: https://lifs-tools.org/auth/realms/lifs
+                    jwk-set-uri: https://lifs-tools.org/auth/realms/lifs/protocol/openid-connect/certs
+    servlet:
+        multipart:
+            max-file-size: 20MB
+            max-request-size: 25MB
+
+server:
+    port: 8081
+    forward-headers-strategy: native
+
+eureka:
+    client:
+        register-with-eureka: true
+        fetch-registry: true
+        serviceUrl:
+            defaultZone: ${EUREKA_URI:http://localhost:28092/eureka}
+    instance:
+        preferIpAddress: true
+        homePageUrlPath: ${server.servlet.contextPath}
+
+management:
+    endpoints:
+        enabled-by-default: false
+    endpoint:
+        info:
+            enabled: true
+
+arangodb:
+    host: ${ARANGODB_HOST:arangodb}
+    port: ${ARANGODB_PORT:28091}
+    timeout: ${ARANGODB_TIMEOUT:5000}
+    user: ${ARANGODB_USER:root}
+    # docker secret lipidcompass_prod_infra_arangodb needs to exist locally
+    password: ${docker-secret.lipidcompass_prod_infra_arangodb_pw}
+    jwt: 
+    #${docker-secret.lipidcompass_prod_arangodb_jwt_token_secret}
+    useSsl: ${ARANGODB_USE_SSL:false}
+    database: lipidcompass
+    drop: false
+    maxconnections: 20
+    connectionTtl: 300000
+    keepAliveInterval: 1800
+    chunksize: 30000
+    search:
+      global:
+        stopwords: a, an, and, are, as, at, be, but, by, for, if, in, into, is, it, no, not, of, on, or, such, that, the, their, then, there, these, they, this, to, was, will, with
+
+lipidcompass:
+    backend:
+        api:
+            version: 1
+    systemUserName: ${LIPIDCOMPASS_SYSTEM_USER}
+    # alternatively, using docker secret: ${docker-secret.lipidcompass_dev_systemuser_password}
+    systemUserPassword: ${docker-secret.lipidcompass_prod_system_user_pw}
+    systemUserEmail: "contact@lifs-tools.org"
+    systemAdminName: ${LIPIDCOMPASS_SYSTEM_ADMIN}
+    # alternatively, using docker secret: 
+    systemAdminPassword: ${docker-secret.lipidcompass_prod_system_admin_pw}
+    systemAdminEmail: "contact@lifs-tools.org"
+
+lipidspace:
+    serviceUrl: ${LIPIDSPACE_URI:http://lipidspace:8888/lipidspace/v1}
+
+minio:
+    endpoint: ${MINIO_ENDPOINT:minio1}
+    port: ${MINIO_PORT:9000}
+    accessKey: ${docker-secret.lipidcompass_prod_infra_minio_password}
+    secretKey: ${docker-secret.lipidcompass_prod_infra_minio_user}
+    useHttps: ${MINIO_USE_HTTPS:false}
+    defaultBucketName: ${MINIO_DEFAULT_BUCKET_NAME:lipidcompass}
+    maxFileSize: ${MINIO_MAX_FILE_SIZE:786187}
+    tmpDir: ${java.io.tmpdir}/lipidcompass/upload-dir
+
+springdoc:
+  version: '@springdoc.version@'
+  api-docs:
+    version: openapi_3_1
+  cache:
+    disabled: true

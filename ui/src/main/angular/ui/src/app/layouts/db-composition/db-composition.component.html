@@ -1,0 +1,71 @@
+<p-card>
+    <p-tabView class="p-card-content">
+        <p-tabPanel header="Qualitative Composition">
+            <ng-template pTemplate="content">
+                <ng-template pTemplate="header"> </ng-template>
+                <!-- <div class="p-card-content"> -->
+                <div class="grid">
+                    <div class="md:col-12 lg:col-3 xl:col-3 sm:col-12">
+                        <p-progressSpinner *ngIf="loadingStats" styleClass="custom-spinner" strokeWidth="4"
+                            [ngStyle]="{ position: 'relative' }"></p-progressSpinner>
+                        <plotly-plot *ngIf="!loadingStats" [data]="data" [layout]="categoryAndClassPlotLayout"
+                            [useResizeHandler]="true" [config]="homePlotlyConfig"
+                            (plotlyClick)="onTreemapSelect($event)">
+                        </plotly-plot>
+                    </div>
+                    <div class="md:col-12 lg:col-9 xl:col-9 sm:col-12">
+                        <p-progressSpinner *ngIf="loadingComposition" styleClass="custom-spinner" strokeWidth="4"
+                            [ngStyle]="{ position: 'relative' }"></p-progressSpinner>
+                        <plotly-plot *ngIf="!loadingComposition" [data]="lipidStatsData"
+                            [layout]="compositionPlotLayout" [useResizeHandler]="true"
+                            [config]="compositionPlotlyConfig" (treemapclick)="onLipidSelect($event)">
+                        </plotly-plot>
+                    </div>
+                </div>
+                <!-- </div> -->
+                <ng-template pTemplate="footer">
+                    <!-- <p-button
+      [routerLink]="['/lipid']"
+      routerLinkActive="router-link-active"
+    >
+      <span class="fa fa-level-down-alt" aria-hidden="true"></span
+      >&nbsp;Browse Lipids
+    </p-button> -->
+                </ng-template>
+            </ng-template>
+        </p-tabPanel>
+        <p-tabPanel header="Quantitative Composition">
+            <ng-template pTemplate="content">
+                <ng-template pTemplate="header"> </ng-template>
+                <div class="grid">
+                    <div class="md:col-12 lg:col-3 xl:col-3 sm:col-12">
+                        <p-progressSpinner *ngIf="loadingStats" styleClass="custom-spinner" strokeWidth="4"
+                            [ngStyle]="{ position: 'relative' }"></p-progressSpinner>
+                        <plotly-plot *ngIf="!loadingStats" [data]="data" [layout]="categoryAndClassPlotLayout"
+                            [useResizeHandler]="true" [config]="homePlotlyConfig"
+                            (plotlyClick)="onTreemapSelect($event)">
+                        </plotly-plot>
+                    </div>
+                    <div class="md:col-12 lg:col-9 xl:col-9 sm:col-12">
+                        <p-progressSpinner *ngIf="loadingComposition" styleClass="custom-spinner" strokeWidth="4"
+                            [ngStyle]="{ position: 'relative' }"></p-progressSpinner>
+                        <plotly-plot *ngIf="!loadingComposition" [data]="lipidQuantStatsData"
+                            [layout]="compositionPlotLayout" [useResizeHandler]="true"
+                            [config]="compositionPlotlyConfig">
+                        </plotly-plot>
+                    </div>
+                </div>
+                <!-- </div> -->
+                <ng-template pTemplate="footer">
+                    <!-- <p-button
+    [routerLink]="['/lipid']"
+    routerLinkActive="router-link-active"
+  >
+    <span class="fa fa-level-down-alt" aria-hidden="true"></span
+    >&nbsp;Browse Lipids
+  </p-button> -->
+                </ng-template>
+            </ng-template>
+        </p-tabPanel>
+    </p-tabView>
+</p-card>

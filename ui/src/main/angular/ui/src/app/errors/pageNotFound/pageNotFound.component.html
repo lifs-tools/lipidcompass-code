@@ -1,0 +1,33 @@
+<p-card
+  header="Page not found!"
+  subheader="Sorry for the inconvenience"
+  styleClass="error-card"
+>
+  <div class="p-card-content">
+    <div class="p-fluid">
+      
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <div>
+      <span class="p-buttonset">
+        <button
+          pButton
+          type="button"
+          label="Dismiss"
+          class="p-button-primary"
+          icon="fas fa-check"
+          [routerLink]="['/home']"
+        ></button>
+        <button
+          pButton
+          type="button"
+          label="Report Issue"
+          class="p-button-danger"
+          icon="fas fa-bug"
+          [routerLink]="['/help']"
+        ></button>
+      </span>
+    </div>
+  </ng-template>
+</p-card>

@@ -1,0 +1,29 @@
+<div class="p-grid">
+    <div class="container p-col-12">
+        <div class="lipid-ms-search">
+          <div class="p-grid">
+            <form #msSearchForm="ngForm" (ngSubmit)="onSubmit(msSearchForm.value)" novalidate>
+              <div class="form-group">
+                <label for="msQueryInput">Query</label>
+                <input type="text" id="msQueryInput" name="msQueryInput" pInputText [(ngModel)]="msQueryInput" class="form-control"/>
+                <p-multiSelect [style]="{'width':'250px'}" [options]="adductIons" [(ngModel)]="msQueryAdductIons" defaultLabel="Adduct Ions" id="msQueryAdductIons" name="msQueryAdductIons">
+                </p-multiSelect>
+                <button pButton type="button" icon="fa-search" (click)="onSubmit(msSearchForm.value)"></button>
+              </div>
+            </form>
+          </div>
+          <div class="p-grid">
+            {{msQueryAdductIons | json}}
+            <!--
+            <p-dataTable [value]="results" [rows]="10" [paginator]="true" [pageLinks]="3" [rowsPerPageOptions]="[5,10,20]">
+                <p-header>Found Lipids</p-header>
+                <p-column field="itemId" header="Id"></p-column>
+                <p-column field="name" header="Name"></p-column>
+                <p-column field="type" header="Level"></p-column>
+                <p-column field="identified" header="Identified"></p-column>
+            </p-dataTable>
+          -->
+          </div>  
+        </div>
+    </div>
+</div>

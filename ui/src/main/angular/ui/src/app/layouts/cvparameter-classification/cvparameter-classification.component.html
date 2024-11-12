@@ -1,0 +1,80 @@
+<div class="grid">
+    <ng-container *ngIf="studyVariableParams.length > 0">
+        <div class="col-3">
+            <span class="fas fa-tags fa-fw" aria-hidden="true"></span
+            >&nbsp;Study
+        </div>
+        <div class="col-9 flex flex-wrap">
+            <ng-container *ngFor="let cvParam of studyVariableParams">
+                <span class="p-tag m-1 p-1 classification">
+                    <app-olslink [cvParam]="cvParam"></app-olslink>
+                </span>
+            </ng-container>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="sampleParams.length > 0">
+        <div class="col-3">
+            <span class="fas fa-tags fa-fw" aria-hidden="true"></span
+            >&nbsp;Samples
+        </div>
+        <div class="col-9 flex flex-wrap">
+            <ng-container *ngFor="let cvParam of sampleParams">
+                <span class="p-tag m-1 p-1 classification">
+                    <app-olslink [cvParam]="cvParam"></app-olslink>
+                </span>
+            </ng-container>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="assayParams.length > 0">
+        <div class="col-3">
+            <span class="fas fa-tags fa-fw" aria-hidden="true"></span
+            >&nbsp;Assay
+        </div>
+        <div class="col-9 flex flex-wrap">
+            <ng-container *ngFor="let cvParam of assayParams">
+                <span class="p-tag m-1 p-1 classification">
+                    <app-olslink [cvParam]="cvParam"></app-olslink>
+                </span>
+            </ng-container>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="instrumentParams.length > 0">
+        <div class="col-3">
+            <span class="fas fa-tags fa-fw" aria-hidden="true"></span
+            >&nbsp;Instrument
+        </div>
+        <div class="col-9 flex flex-wrap">
+            <ng-container *ngFor="let cvParam of instrumentParams">
+                <span class="p-tag m-1 p-1 classification">
+                    <app-olslink [cvParam]="cvParam"></app-olslink>
+                </span>
+            </ng-container>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="msRunParams.length > 0">
+        <div class="col-3">
+            <span class="fas fa-tags fa-fw" aria-hidden="true"></span>&nbsp;MS
+            Runs
+        </div>
+        <div class="col-9 flex flex-wrap">
+            <ng-container *ngFor="let cvParam of msRunParams">
+                <span class="p-tag m-1 p-1 classification">
+                    <app-olslink [cvParam]="cvParam"></app-olslink>
+                </span>
+            </ng-container>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="unspecifiedParams.length > 0">
+      <div class="col-3">
+          <span class="fas fa-tags fa-fw" aria-hidden="true"></span>&nbsp;MS
+          Runs
+      </div>
+      <div class="col-9 flex flex-wrap">
+          <ng-container *ngFor="let cvParam of unspecifiedParams">
+              <span class="p-tag m-1 p-1 classification">
+                <app-olslink [cvParam]="cvParam"></app-olslink>
+              </span>
+          </ng-container>
+      </div>
+  </ng-container>
+</div>

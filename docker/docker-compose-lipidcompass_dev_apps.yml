@@ -1,0 +1,124 @@
+name: lipidcompass_dev_apps
+services:
+  ui:
+    image: docker.lifs-tools.org/lifs/lipidcompass-ui:${LC_VERSION}
+    environment:
+      EUREKA_URI: http://registry:8761/eureka
+      SPRING_PROFILES_ACTIVE: dev
+      KEYCLOAK_CLIENT_SECRET: yAfrZMHBh0OOaA5eQVYszTepEI9bJeF1
+      KEYCLOAK_REALM_URI: http://localhost:28080/auth/realms/lifs
+    ports:
+      - target: 8091
+        published: 28096
+        protocol: tcp
+        mode: ingress
+    networks:
+      - proxy
+      - lipidcompass_dev
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 60s
+      labels:
+        - "traefik.enable=false"
+        - "traefik.port=8091"
+        - "traefik.frontend.rule=Host: gateway.lc-dev.traefik;"
+        - "traefik.frontend.entryPoints=http,https"
+        - "traefik.docker.network=proxy"
+        - "traefik.backend.loadbalancer.sticky=true"
+        - "traefik.frontend.passHostHeader=true"
+  dataimporter:
+    image: docker.lifs-tools.org/lifs/lipidcompass-data-importer:${LC_VERSION}
+    environment:
+      EUREKA_URI: http://registry:8761/eureka
+      #      SOLR_URI: http://solr:8983/solr
+      #      CONFIG_URI: http://configuration:8095/lcconfig
+      BATCH_DATABASE_DIR: /tmp/lipidcompass/spring-batch
+      BATCH_DATABASE_USER: lcbatch
+      ARANGODB_HOST: arangodb
+      ARANGODB_PORT: 8529
+      ARANGODB_USER: root
+      ARANGODB_DATABASE: lipidcompass-dev
+      ARANGODB_PASSWORD: /run/lipidcompass_dev_infra_arangodb
+      SPRING_PROFILES_ACTIVE: dev
+      KEYCLOAK_CLIENT_SECRET: yAfrZMHBh0OOaA5eQVYszTepEI9bJeF1
+      KEYCLOAK_REALM_URI: http://localhost:28080/auth/realms/lifs
+    ports:
+      - target: 8088
+        published: 28094
+        protocol: tcp
+        mode: ingress
+    networks:
+      - lipidcompass_dev
+      - proxy
+    volumes:
+      - batch-db-volume:/tmp/lipidcompass
+    secrets:
+      - lipidcompass_dev_infra_arangodb
+      - lipidcompass_dev_infra_batchdb
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 60s
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=8088"
+        - "traefik.frontend.rule=Host: importer.lc-dev.traefik; PathPrefix: /lcdataimport"          
+        - "traefik.frontend.entryPoints=http,https"
+        - "traefik.docker.network=proxy"
+        - "traefik.backend.loadbalancer.sticky=true"
+        - "traefik.frontend.passHostHeader=true"
+  backend:
+    image: docker.lifs-tools.org/lifs/lipidcompass-backend:${LC_VERSION}
+    environment:
+      EUREKA_URI: http://registry:8761/eureka
+      #      CONFIG_URI: http://configuration:8095/lcconfig
+      ARANGODB_HOST: arangodb
+      ARANGODB_PORT: 8529
+      ARANGODB_USER: root
+      ARANGODB_DATABASE: lipidcompass-dev  
+      ARANGODB_PASSWORD: /run/lipidcompass_dev_infra_arangodb
+      SPRING_PROFILES_ACTIVE: dev
+      KEYCLOAK_CLIENT_SECRET: yAfrZMHBh0OOaA5eQVYszTepEI9bJeF1
+      KEYCLOAK_REALM_URI: http://localhost:28080/auth/realms/lifs
+    ports:
+      - target: 8081
+        published: 28090
+        protocol: tcp
+        mode: ingress
+    networks:
+      - lipidcompass_dev
+      - proxy
+    secrets:
+      - lipidcompass_dev_infra_arangodb
+    deploy:
+            # endpoint_mode: dnsrr            
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 60s
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=8081"
+        - "traefik.frontend.rule=Host:backend.lc-dev.traefik; PathPrefix: /lcbackend"
+        - "traefik.frontend.entryPoints=http,https"
+        - "traefik.docker.network=proxy"
+        - "traefik.backend.loadbalancer.sticky=true"
+        - "traefik.frontend.passHostHeader=true"
+volumes:
+  batch-db-volume:
+networks:
+  lipidcompass_dev:
+    external: true
+  proxy:
+    external: true
+secrets:
+  lipidcompass_dev_infra_arangodb:
+    file: ./.lipidcompass_dev_infra_arangodb
+  lipidcompass_dev_infra_batchdb:
+    file: ./.lipidcompass_dev_infra_batchdb

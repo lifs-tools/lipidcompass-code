@@ -1,0 +1,5 @@
+#!/bin/sh
+cd $(dirname $0)
+PATH="$PWD/node_installation/node/":$PATH
+NPM_BIN="node_installation/node/node_modules/npm/bin"
+"$NPM_BIN/npm-cli.js" "$@"

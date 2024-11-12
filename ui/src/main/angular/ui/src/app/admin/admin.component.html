@@ -1,0 +1,10 @@
+<div class="flex flex-row flex-wrap m-2">
+  <div class="flex sm:col-12 md:col-3 lg:col-3 xl:col-3 w-auto">
+    <p-panelMenu [model]="items" class="w-full"></p-panelMenu>
+  </div>
+  <div class="flex flex-auto sm:col-12 md:col-9 lg:col-9 xl:col-9">
+    <div style="width: 100%">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

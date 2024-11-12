@@ -1,0 +1,78 @@
+<!-- <div class="p-col-12">
+  <p-steps [model]="dataSubmitSteps" [activeIndex]="activeIndex"></p-steps>
+</div> -->
+<p-card>
+  <ng-template pTemplate="title"> Validation Results </ng-template>
+  <ng-template pTemplate="subtitle">
+    Review potential issues with your data
+  </ng-template>
+  <ng-template pTemplate="content">
+    <div class="p-grid">
+      <p-dataView
+        class="p-col-12"
+        [value]="mzTabFiles | async"
+        id="mzTabResultSubmissions"
+        [paginator]="true"
+        [rows]="10"
+        [loading]="progress"
+      >
+        <ng-template pTemplate="header">MzTab files in submission</ng-template>
+        <ng-template let-mzTabFile pTemplate="listItem">
+          <div class="p-col-12">
+            <div class="file-list-item">
+                <!-- <img [src]="'assets/showcase/images/demo/product/' + product.image" [alt]="product.name"/> -->
+                <div class="file-name p-px-2">{{mzTabFile.fileName}}</div>
+                <div class="file-list-detail p-px-2">
+                    <div class="file-path">{{mzTabFile.filePath}}</div>
+                    <div class="file-hash">{{mzTabFile.sha256Hash}}</div>
+                    <div class="file-type">{{mzTabFile.fileType}}</div>
+                    <div *ngIf="this.validationMessages[mzTabFile.fileName] && this.validationMessages[mzTabFile.fileName].length===0; else fileInvalid" class="file-valid">Valid</div>
+                    <ng-template #fileInvalid>Invalid</ng-template> 
+                    <!-- <i class="pi pi-tag product-category-icon"></i><span class="product-category">{{product.category}}</span> -->
+                </div>
+                <div class="file-list-action p-pl-2">
+                    <button pButton type="button" class="p-button-success" icon="fas fa-check-double" label="Validate" (click)="validate(mzTabFile)"></button>
+                </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="p-d-flex p-jc-between" *ngIf="submission && (submission.status === 'IN_PROGRESS')">
+      <div class="p-nogutter p-justify-start">
+        <button
+          pButton
+          type="button"
+          label="Back"
+          (click)="previousPage($event)"
+          icon="fa fa-chevron-left"
+          iconPos="left"
+        ></button>
+      </div>
+      <div class="p-nogutter p-justify-end">
+        <span class="p-buttonset">
+          <button
+            pButton
+            type="button"
+            label="Cancel"
+            (click)="cancel($event)"
+            icon="fa fa-times"
+            iconPos="right"
+            class="p-button-danger"
+          ></button>
+          <button
+            pButton
+            type="button"
+            label="Next"
+            (click)="nextPage($event)"
+            icon="fa fa-chevron-right"
+            iconPos="right"
+            [disabled]="(mzTabFiles | async)?.length===0"
+          ></button>
+        </span>
+      </div>
+    </div>
+  </ng-template>
+</p-card>
