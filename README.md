@@ -1,13 +1,13 @@
 # LipidCompass Database and Web Application
-[![Java CI with Maven](https://github.com/lifs-tools/lipidcompass/actions/workflows/maven.yml/badge.svg)](https://github.com/lifs-tools/lipidcompass/actions/workflows/maven.yml)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/lifs-tools/lipidcompass/LICENSE)
+[![Java CI with Maven](https://github.com/lifs-tools/lipidcompass-code/actions/workflows/maven.yml/badge.svg)](https://github.com/lifs-tools/lipidcompass-code/actions/workflows/maven.yml)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/lifs-tools/lipidcompass-code/LICENSE)
 
 
 [LipidCompass](https://lipidcompass.org) is a database and web application for the storage and analysis of lipidomics data. It is based on the mzTab-M format and provides a REST API for data access. A comprehensive user interface provides functions for interactive comparison and visualization of lipidomics data within and across studies. The project is structured as a set of microservices, which are deployed in a Docker environment.
 
 Please note that this repository is not intended for direct use by end users. It is a development repository for the LipidCompass project. For more information, please visit the [LipidCompass website](https://lipidcompass.org) or the [LIFS Tools website](https://lifs-tools.org).
 
-As with any software, there are always bugs and issues. If you find any, please report them in the [issue tracker](https://github.com/lifs-tools/lipidcompass/issues). We are also happy to receive pull requests with bug fixes or enhancements. Please note that we cannot disclose any data or information that is not already public. If you have any questions, [please contact us](https://lifs-tools.org/support.html).
+As with any software, there are always bugs and issues. If you find any, please report them in the [issue tracker](https://github.com/lifs-tools/lipidcompass-code/issues). We are also happy to receive pull requests with bug fixes or enhancements. Please note that we cannot disclose any data or information that is not already public. If you have any questions, [please contact us](https://lifs-tools.org/support.html).
 
 ## Development
 
